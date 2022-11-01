@@ -1,0 +1,16 @@
+{
+    "binsize" : 10,
+    "keyname" : "lineage",
+    "targets": [
+        "all",
+        "Gut",
+        "Neural",
+        "Pharynx"
+    ],
+    "grayvalue": [
+        50,
+        100,
+        150,
+        200
+    ]
+}

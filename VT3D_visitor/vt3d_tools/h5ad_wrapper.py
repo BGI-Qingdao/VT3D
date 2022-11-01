@@ -18,7 +18,7 @@ class H5ADWrapper:
 
     def getCellXYZA(self,obsm_key='coord3D',dtype=int,obs_key='lineage'):
         df = self.getBodyXYZ(obsm_key,dtype)
-        df[obs_key] = self.data.obs[obs_key].to_numpy()
+        df['anno'] = self.data.obs[obs_key].to_numpy()
         return df 
 
     def getGeneXYZE(self,genename,exp_cutoff=0,obsm_key='coord3D',dtype=int):
@@ -32,3 +32,6 @@ class H5ADWrapper:
         tmpdata = self.data[cellarray,:].copy()
         tmpdata.obsm['coord2D'] = coord2D
         return tmpdata
+
+    def hasAnno(self, keyname):
+        return keyname in  self.data.obs.columns

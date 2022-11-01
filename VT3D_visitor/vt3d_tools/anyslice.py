@@ -19,9 +19,9 @@ Options:
        optional options:
             --thickness [default 16]
 Example:
-    > vt3d_visitor AnySlice -i in.h5ad -o test --p0 [0,1,0] --p1 [1,0,0] --p2 [1,1,0]
+    > vt3d_visitor AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
-      test.h5ad
+    test.h5ad
      
 """)
 
