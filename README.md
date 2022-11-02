@@ -116,3 +116,59 @@ Options:
 Example :
      vt3d_visitor MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD
 ```
+
+### Detail usage of AnySlice
+
+```
+>./vt3d_visitor AnySlice -h
+
+Usage : vt3d_visitor AnySlice [options]
+
+Options:
+       required options:
+            -i <input.h5ad>
+            -o <output prefix>
+            --p0 <coordinate of p0>
+            --p1 <coordinate of p1>
+            --p2 <coordinate of p2>
+
+       optional options:
+            --thickness [default 16]
+Example:
+    > vt3d_visitor AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
+    > ls
+    test.h5ad
+```
+
+### Detail usage of AnySlice
+
+```
+>./vt3d_visitor GrayScaleTif -h
+
+Usage : vt3d_visitor GrayScaleTif [options]
+
+Options:
+       required options:
+            -i <input.h5ad>
+            -o <output prefix>
+            -c <conf.json>
+Example:
+        > vt3d_visitor GrayScaleTif -i in.h5ad -o test -c organ.json
+        > cat organ.json
+        {
+            "binsize" : 10,
+            "keyname" : "lineage",
+            "targets": [
+                "all",
+                "Gut",
+                "Pharynx"
+                "Neural",
+            ],
+            "grayvalue": [
+                50,
+                100,
+                150,
+                200
+            ]
+        }
+```
