@@ -32,6 +32,12 @@ gzip -dc WT.VT3D.h5ad.gz >WT.VT3D.h5ad
 cd ../
 ```
 
+The input data is h5ad base and save 3D corrdinate in obsm:
+
+![image](https://user-images.githubusercontent.com/8720584/199381217-96741181-13ae-4b88-b4f4-817544e50eea.png)
+
+
+
 ### Generate MEP image
 
 ```
@@ -55,6 +61,7 @@ The output gut.SMED30007704.tif (opened by any image tool is OK) :
 ```
 
 The test3d.tif (opened by ImageJ 3DViewer)  :
+
 ![image](https://user-images.githubusercontent.com/8720584/199373130-87fa5d7f-f07e-43e6-a402-a5e9176bbc64.png)
 
 
