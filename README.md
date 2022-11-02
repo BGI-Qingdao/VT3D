@@ -148,7 +148,7 @@ Example:
     test.h5ad
 ```
 
-### Detail usage of AnySlice
+### Detail usage of GrayScaleTif
 
 ```
 >./vt3d_visitor GrayScaleTif -h
