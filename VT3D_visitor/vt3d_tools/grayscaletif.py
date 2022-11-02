@@ -5,7 +5,6 @@ import getopt
 import numpy as np
 import pandas as pd
 from skimage import io
-import scipy.ndimage as nd
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
 #####################################################
