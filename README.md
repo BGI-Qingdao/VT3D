@@ -37,6 +37,10 @@ cd ../
 ```
 ./vt3d_visitor MEP -i example_data/WT.VT3D.h5ad -o gut.SMED30007704 -g SMED30007704
 ```
+The output gut.SMED30007704.tif (opened by any image tool is OK) :
+
+![image](https://user-images.githubusercontent.com/8720584/199372843-7fafc175-e8fa-4806-966b-9beaef7201f4.png)
+
 
 ### AnySlice
 
@@ -49,6 +53,10 @@ cd ../
 ```
 ./vt3d_visitor GrayScaleTif -i  example_data/WT.VT3D.h5ad  -o test3d -c example_data/organ.json
 ```
+
+The test3d.tif (opened by ImageJ 3DViewer)  :
+![image](https://user-images.githubusercontent.com/8720584/199373130-87fa5d7f-f07e-43e6-a402-a5e9176bbc64.png)
+
 
 ## Quick introduction of vt3d_browser
 ```
