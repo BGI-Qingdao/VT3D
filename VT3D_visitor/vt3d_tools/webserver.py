@@ -41,6 +41,7 @@ def webserver_main(argv:[]):
 
     # sanity check
     # run server
-    server_address = ('', 8050)
+    print(f'server run in port {port} now ...')
+    server_address = ('', port)
     httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
     httpd.serve_forever()

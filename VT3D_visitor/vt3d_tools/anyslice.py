@@ -121,7 +121,7 @@ def anyslice_main(argv:[]):
     #project 2D
     new_xyzc = plane.project_coord(xyzc,xyzc['dist'].to_numpy())
     new_xyzc = project2D(new_xyzc)
-    #create new h5ad
-    out_h5ad = inh5ad.extract2D(new_xyzc['cell'].to_numpy(),new_xyzc[['2d_x','2d_y']].to_numpy())
+    #create new h5ad 
+    out_h5ad = inh5ad.extract_and_assign2D(new_xyzc['cell'].to_numpy(),new_xyzc[['2d_x','2d_y']].to_numpy())
     out_h5ad.write(f'{prefix}.VT3D.h5ad', compression="gzip")
     return None

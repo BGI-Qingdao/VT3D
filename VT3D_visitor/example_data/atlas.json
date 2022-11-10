@@ -1,0 +1,16 @@
+{
+    "Coordinate" : 'coord3d',
+    "Annotatinos" : ["cluster","lineage"],
+    "Meshes" : [
+        "gut" : "gut.obj",
+        "nueral" : "nueral.obj",
+        "pharynx" : "pharynx.obj"
+    ],
+    "ExtraGeneMeta" : [],
+    "Genes" : [
+       "SMED30033583",
+       "SMED30011277",
+       "SMED30031463",
+       "SMED30033839"
+    ]
+}

@@ -6,6 +6,9 @@ class H5ADWrapper:
     def __init__(self,h5ad_filename):
         self.data = ad.read_h5ad(h5ad_filename)
 
+    #######################################################
+    # get xyzv
+    ######################################################
     def getBodyXYZ(self,obsm_key='coord3D',dtype=int):
         xyz = self.data.obsm[obsm_key]
         df = pd.DataFrame(data=xyz,columns=['x','y','z'],dtype=dtype)
@@ -28,10 +31,51 @@ class H5ADWrapper:
         df['exp'] = exp
         df = df[df['exp']>exp_cutoff].copy()
         return df
-    def extract2D(self,cellarray,coord2D):
+
+    #######################################################
+    # for any slice
+    ######################################################
+    def extract_and_assign2D(self,cellarray,coord2D):
         tmpdata = self.data[cellarray,:].copy()
         tmpdata.obsm['coord2D'] = coord2D
         return tmpdata
 
+    #######################################################
+    # check names API
+    ######################################################
     def hasAnno(self, keyname):
         return keyname in  self.data.obs.columns
+
+    def hasGene(self, genename):
+        return genename in self.data.var.index
+
+    def hasCoord(self, coordkey):
+        return coordkey in self.data.obsm
+
+    #def has
+
+    #######################################################
+    # Json API for webcache
+    ######################################################
+    def getSummary(self, coord, annos,genes):
+        ret = {}
+        # get the total xxx
+        ret['total_cell'] = len(self.data.obs.index)
+        ret['total_gene'] = len(genes)
+        # get Annotation factors
+        ret['annos'] = {}
+        for anno in annos:
+            unique_anno = np.unique(self.data.obs[anno])
+            ret['annos'][anno] = unique_anno.tolist()
+        # prepare box-space
+        ret['box'] = {}
+        coordarray = self.data.obsm[coord]
+        ret['box']['xmin'] = np.min(coordarray[:,0]) 
+        ret['box']['xmax'] = np.max(coordarray[:,0]) 
+        ret['box']['ymin'] = np.min(coordarray[:,1]) 
+        ret['box']['ymax'] = np.max(coordarray[:,1]) 
+        ret['box']['zmin'] = np.min(coordarray[:,2]) 
+        ret['box']['zmax'] = np.max(coordarray[:,2]) 
+        # save gene list
+        ret['genes'] = genes
+        return ret
