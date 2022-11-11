@@ -14,10 +14,10 @@ def create_folder(foldername):
     except FileExistsError:
         print(f'cache folder -- {foldername} already exists, reuse it now....')
 
-def savedic2json(data,filename):
-    json.dumps(data)
+def savedata2json(data,filename):
+    text = json.dumps(data)
     textfile = open(filename, "w")
-    textfile.write(textfile)
+    textfile.write(text)
     textfile.close()
     
 #####################################################
@@ -36,19 +36,19 @@ Example:
         > vt3d_visitor WebCache -i in.h5ad -c atlas.json
         > cat atlas.json
         {
-            "Coordinate" : 'coord3d',
-            "Annotatinos" : ["lineage"],
-            "Meshes" : [
-                "gut" : "gut.obj",
-                "nueral" : "nueral.obj",
-                "pharynx" : "pharynx.obj"
-            ],
+            "Coordinate" : "coord3D",
+            "Annotatinos" : [ "lineage" ],
+            "Meshes" : {
+                "gut" : "example_data/gut.obj" ,
+                "nueral" : "example_data/neural.obj" ,
+                "pharynx" : "example_data/pharynx.obj"
+            },
             "Genes" : [
-               "SMED30033583",
-               "SMED30011277",
+               "SMED30033583" ,
+               "SMED30011277" ,
        ... genes you want to display ...
-               "SMED30031463",
-               "SMED30033839",
+               "SMED30031463" ,
+               "SMED30033839"
             ]
         }
 
@@ -121,7 +121,8 @@ def webcache_main(argv:[]):
     if len(confdata['Annotatinos']) <1 and len(confdata['Genes']) < 1 and len(confdata['Meshes']) <1:
         print('Error: nothing to show! exit ...',flush=True)
         sys.exit(4)
-    for meshfile in len(confdata['Meshes']):
+    for meshkey in confdata['Meshes']:
+        meshfile = confdata['Meshes'][meshkey]
         if not os.path.isfile(meshfile):
             print(f'Error: invalid mesh :{meshfile}!' ,flush=True)
             sys.exit(3)
@@ -143,7 +144,7 @@ def webcache_main(argv:[]):
 
     #######################################
     # load objs
-
+        
     #######################################
     # create main folder, summary.json gene.json
     create_folder(f'{prefix}')
@@ -152,14 +153,21 @@ def webcache_main(argv:[]):
     create_folder(f'{prefix}/Mesh')
     #######################################
     # generate summary and gene json
-    summary = inh5ad.getSummary(confdata['Annotatinos'] , confdata['Genes'])
-    savedic2json(summary, f'{prefix}/summary.json')      
+    summary = inh5ad.getSummary(confdata['Coordinate'] ,confdata['Annotatinos'] , confdata['Genes'])
+    savedata2json(summary, f'{prefix}/summary.json')      
+    savedata2json(confdata['Genes'],f'{prefix}/gene.json')
     #######################################
     # generate annotation json
-
+    for anno in confdata['Annotatinos']:
+        xyza = inh5ad.getCellXYZA(confdata['Coordinate'],int,anno)
+        mapper = summary['annomapper'][f'{anno}_legend2int']
+        xyza['annoid'] = xyza.apply(lambda row : mapper[row['anno']],axis=1)
+        savedata2json(xyza[['x','y','z','annoid']].to_numpy().tolist(),f'{prefix}/Anno/{anno}.json')
     #######################################
     # generate mesh json
 
     #######################################
     # generate gene json
-
+    for gene in confdata['Genes']:
+        xyze = inh5ad.getGeneXYZE(gene,0,confdata['Coordinate'],int)
+        savedata2json(xyze.to_numpy().tolist(),f'{prefix}/Gene/{gene}.json')

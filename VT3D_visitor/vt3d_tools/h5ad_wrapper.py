@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 import anndata as ad
@@ -63,10 +64,21 @@ class H5ADWrapper:
         ret['total_cell'] = len(self.data.obs.index)
         ret['total_gene'] = len(genes)
         # get Annotation factors
-        ret['annos'] = {}
+        ret['annokeys'] = []
+        ret['annomapper'] = {}
         for anno in annos:
             unique_anno = np.unique(self.data.obs[anno])
-            ret['annos'][anno] = unique_anno.tolist()
+            if len(unique_anno)<1:
+                print("ERROR: invalid annokey : {anno} exit..." )
+                sys.exit(101)
+            ret['annokeys'].append(anno)
+            legend2int = {}
+            int2legend = {}
+            for i,key in enumerate(unique_anno):
+                legend2int[key]=i
+                int2legend[i]=key   
+            ret['annomapper'][f'{anno}_legend2int'] = legend2int
+            ret['annomapper'][f'{anno}_int2legend'] = int2legend
         # prepare box-space
         ret['box'] = {}
         coordarray = self.data.obsm[coord]
@@ -76,6 +88,4 @@ class H5ADWrapper:
         ret['box']['ymax'] = np.max(coordarray[:,1]) 
         ret['box']['zmin'] = np.min(coordarray[:,2]) 
         ret['box']['zmax'] = np.max(coordarray[:,2]) 
-        # save gene list
-        ret['genes'] = genes
         return ret
