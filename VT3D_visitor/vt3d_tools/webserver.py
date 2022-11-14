@@ -19,6 +19,10 @@ Example:
         never stop until you press Ctrl-C
 """, flush=True)
 
+class CORSRequestHandler (SimpleHTTPRequestHandler):
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        SimpleHTTPRequestHandler.end_headers(self)
 #####################################################
 # main pipe
 #
@@ -43,5 +47,5 @@ def webserver_main(argv:[]):
     # run server
     print(f'server run in port {port} now ...')
     server_address = ('', port)
-    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+    httpd = HTTPServer(server_address, CORSRequestHandler)
     httpd.serve_forever()
