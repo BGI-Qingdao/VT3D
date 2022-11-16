@@ -6,6 +6,13 @@ import getopt
 import numpy as np
 import pandas as pd
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
+from vt3d_tools.obj_wrapper import OBJWrapper
+
+
+def check_file(filename):
+    if not os.path.isfile(filename):
+        print(f'Error: invalid input file :{filename}!' ,flush=True)
+        sys.exit(3)
 
 def create_folder(foldername):
     try:
@@ -67,12 +74,9 @@ The structure of output atlas folder:
              ...
              +---SMED30031463.json
              +---SMED30033839.json
-        +---Mesh
-             +---gut.json
-             +---neural.json
-             +---pharynx.json
         +---summary.json
         +---gene.json
+        +---meshes.json
 """, flush=True)
 
 #####################################################
@@ -122,10 +126,12 @@ def webcache_main(argv:[]):
         print('Error: nothing to show! exit ...',flush=True)
         sys.exit(4)
     for meshkey in confdata['Meshes']:
+        if not 'mesh_coord' in  confdata:
+            print('Error: no mesh_coord exit ...',flush=True)
+            sys.exit(4)
         meshfile = confdata['Meshes'][meshkey]
-        if not os.path.isfile(meshfile):
-            print(f'Error: invalid mesh :{meshfile}!' ,flush=True)
-            sys.exit(3)
+        check_file(confdata['mesh_coord'])
+        check_file(meshfile)
         
     #######################################
     # load h5ad and sanity check
@@ -150,7 +156,6 @@ def webcache_main(argv:[]):
     create_folder(f'{prefix}')
     create_folder(f'{prefix}/Anno')
     create_folder(f'{prefix}/Gene')
-    create_folder(f'{prefix}/Mesh')
     #######################################
     # generate summary and gene json
     summary = inh5ad.getSummary(confdata['Coordinate'] ,confdata['Annotatinos'] , confdata['Genes'])
@@ -165,7 +170,11 @@ def webcache_main(argv:[]):
         savedata2json(xyza[['x','y','z','annoid']].to_numpy().tolist(),f'{prefix}/Anno/{anno}.json')
     #######################################
     # generate mesh json
-
+    coord_file = confdata['mesh_coord']
+    meshes = OBJWrapper(coord_file)
+    for meshname in confdata['Meshes']:
+        meshes.add_mesh(meshname,confdata['Meshes'][meshname]) 
+    savedata2json(meshes.get_data(),f'{prefix}/meshes.json')
     #######################################
     # generate gene json
     for gene in confdata['Genes']:

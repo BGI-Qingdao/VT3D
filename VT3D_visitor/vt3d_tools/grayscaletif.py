@@ -7,6 +7,12 @@ import pandas as pd
 from skimage import io
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
+def savedata2json(data,filename):
+    text = json.dumps(data)
+    textfile = open(filename, "w")
+    textfile.write(text)
+    textfile.close()
+
 #####################################################
 # Usage
 #
@@ -111,16 +117,24 @@ class Bin3D:
         return ret_list
 
     def ToTIFF(self,targets,grayvalues):
-        rect = self.getRect()
+        self.rect = self.getRect()
         slices = self.binz()
-        width = rect.W(self.binsize)   
-        height = rect.H(self.binsize)
+        width = self.rect.W(self.binsize)   
+        height = self.rect.H(self.binsize)
         canvas = np.zeros( (len(slices),height,width) , dtype='uint8' )
         for i,tmp_slice in enumerate(slices):
-            tmp_canvas = Slice2TIF(tmp_slice, rect, self.binsize, targets, grayvalues)
+            tmp_canvas = Slice2TIF(tmp_slice, self.rect, self.binsize, targets, grayvalues)
             canvas[i,:,:] = tmp_canvas
         return canvas
-
+    def save_coordconf(self,filename):
+        conf = {}
+        conf['xmin'] = self.rect.xmin  
+        conf['ymin'] = self.rect.ymin  
+        conf['xmax'] = self.rect.xmax  
+        conf['ymax'] = self.rect.ymax
+        conf['margin'] = self.rect.margin
+        conf['binsize'] = self.binsize
+        savedata2json(conf,filename)
 #####################################################
 # main pipe
 #
@@ -149,6 +163,7 @@ def grayscaletif_main(argv:[]):
 
     if inh5data == "" or prefix == ""  or conf_file == "":
         print("Error: incomplete parameters",flush=True)
+        grayscaletif_usage()
         sys.exit(1)
 
     # load conf
@@ -183,6 +198,7 @@ def grayscaletif_main(argv:[]):
     bin3d = Bin3D(xyza,int(confdata['binsize']))
     tiff3d = bin3d.ToTIFF(confdata['targets'],confdata['grayvalue'])
     io.imsave(f'{prefix}.tif',tiff3d)
+    bin3d.save_coordconf(f'{prefix}.coord.json')
 
 #####################################################
 if __name__ == '__main__':
