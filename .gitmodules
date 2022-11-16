@@ -1,0 +1,3 @@
+[submodule "VT3D_Browser"]
+	path = VT3D_Browser
+	url = https://github.com/BGI-Qingdao/VT3D_Browser.git
