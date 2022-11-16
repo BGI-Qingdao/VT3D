@@ -106,6 +106,8 @@ class Bin3D:
         return RectBoundary(xmin,xmax,ymin,ymax)
 
     def binz(self):
+        self.zmin = np.min(self.basedata['z'])
+        self.zmax = np.max(self.basedata['z'])
         self.basedata['z'] = self.basedata['z'] / self.binsize
         self.basedata['z'] = self.basedata['z'].astype(int)
         zmin = np.min(self.basedata['z'])
@@ -133,6 +135,8 @@ class Bin3D:
         conf['xmax'] = self.rect.xmax  
         conf['ymax'] = self.rect.ymax
         conf['margin'] = self.rect.margin
+        conf['zmin'] = self.zmin 
+        conf['zmax'] = self.zmax
         conf['binsize'] = self.binsize
         savedata2json(conf,filename)
 #####################################################

@@ -11,6 +11,7 @@ class OBJWrapper:
         confdata = json.load(open(coordfile))
         self.xmin = confdata['xmin']
         self.ymin = confdata['ymin']
+        self.zmin = confdata['zmin']
         self.margin = confdata['margin']
         self.binsize = confdata['binsize']
         self.x_shift = self.xmin//self.binsize - self.margin
@@ -18,8 +19,12 @@ class OBJWrapper:
 
     def reset_coord(self, vectors):
         vectors = vectors.astype(float)
-        vectors['x'] = vectors['x'] - self.x_shift
-        vectors['y'] = vectors['y'] - self.y_shift
+        vectors['x'] = vectors['x'] + self.x_shift
+        vectors['y'] = vectors['y'] + self.y_shift
+        vectors['x'] = vectors['x'] * self.binsize
+        vectors['y'] = vectors['y'] * self.binsize
+        vectors['z'] = vectors['z'] * self.binsize
+        vectors['z'] = vectors['z'] + self.zmin 
         return vectors
          
     def add_mesh(self, organname, objfile):
