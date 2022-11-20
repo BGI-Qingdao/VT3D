@@ -46,10 +46,12 @@ Example:
             "Coordinate" : "coord3D",
             "Annotatinos" : [ "lineage" ],
             "Meshes" : {
-                "gut" : "example_data/gut.obj" ,
+                "body" : "example_data/body.obj" ,
+                "gut" : "example_data/gut.obj"     ,
                 "nueral" : "example_data/neural.obj" ,
                 "pharynx" : "example_data/pharynx.obj"
             },
+            "mesh_coord" : "example_data/WT.coord.json",
             "Genes" : [
                "SMED30033583" ,
                "SMED30011277" ,

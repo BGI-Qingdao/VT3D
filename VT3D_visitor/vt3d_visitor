@@ -13,18 +13,21 @@ Usage : vt3d_visitor <action> [options ]
           -h/--help           show this short usage
 Action:
           -------------------------------------------------------------------------------
-          MEP			Maximun Expression Projection. (suit 3D structure to 2D)
-          AnySlice		Extract 2D slice from any angle.
-          GrayScaleTif		Generate 3D TIFF gray scale image as input of Slicer3D
-          WebCache		Generate cache files as input VT3D_browser.
-          WebServer             Start the server in WebCache folder
-          ROI                   3D ROI
-          PosAction             shift/rotate/scale the cell postions
+          MEP                   Maximun Expression Projection. (suit 3D structure to 2D)
+          AnySlice              Extract 2D slice from any angle.
+          GrayScaleTif          Generate 3D TIFF gray scale image as input of Slicer3D.
+          WebCache              Generate cache files for WebCache action.
+          WebServer             Start the atlas server for VT3D_Browse in WebCache folder.
           -------------------------------------------------------------------------------
 
 Detail usage of each action:
         vt3d_visitor <action> -h
 """)
+
+#          ROI                   3D ROI
+#          PosAction             shift/rotate/scale the cell postions
+#                                                   "ROI",
+#                                                   "PosAction",
 
 # logic codes
 if __name__ == "__main__":
@@ -32,8 +35,6 @@ if __name__ == "__main__":
         main_usage()
         exit(0)
     elif len(sys.argv) < 2 or not sys.argv[1] in ( "MEP",
-                                                   "ROI",
-                                                   "PosAction",
                                                    "AnySlice",
                                                    "GrayScaleTif",
                                                    "WebCache",

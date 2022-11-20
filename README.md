@@ -10,10 +10,10 @@ A python3 environment with below packages:
 
 * json
 * numpy
-* pandas 
+* pandas
 * skimage
 * sklearn
-* plotly
+* anndata
 
 ## Dowload
 
@@ -35,7 +35,6 @@ cd ../
 The input data is h5ad base and save 3D corrdinate in obsm:
 
 ![image](https://user-images.githubusercontent.com/8720584/199381217-96741181-13ae-4b88-b4f4-817544e50eea.png)
-
 
 
 ### Generate MEP image
@@ -66,9 +65,23 @@ The test3d.tif (opened by ImageJ 3DViewer)  :
 
 
 ## Quick introduction of vt3d_browser
+
+### Generate web cache folder
+
 ```
-TODO
+./vt3d_visitor GrayScaleTif -i  example_data/WT.VT3D.h5ad -c  example_data/atlas.json -o WebCache
 ```
+
+### Start web server
+
+```
+cd WebCache
+../vt3d_visitor WebServer -p 8010
+```
+
+### Browse your data now! ~
+
+
 
 ## Full usage of vt3d_visitor
 
@@ -81,8 +94,9 @@ Action:
           -------------------------------------------------------------------------------
           MEP                   Maximun Expression Projection. (suit 3D structure to 2D)
           AnySlice              Extract 2D slice from any angle.
-          GrayScaleTif          Generate 3D TIFF gray scale image as input of Slicer3D
-          WebCache              Generate cache files as input VT3D_browser.
+          GrayScaleTif          Generate 3D TIFF gray scale image as input of Slicer3D.
+          WebCache              Generate cache files for WebCache action.
+          WebServer             Start the atlas server for VT3D_Browse in WebCache folder.
           -------------------------------------------------------------------------------
 
 Detail usage of each action:
@@ -186,4 +200,75 @@ Example:
                 200
             ]
         }
+```
+
+### Detail usage of WebCache
+
+```
+>./vt3d_visitor WebCache -h
+
+Usage : vt3d_visitor WebCache [options]
+
+Options:
+       required options:
+            -i <input.h5ad>
+            -c <conf.json>
+            -o [output prefix, default webcace]
+Example:
+        > vt3d_visitor WebCache -i in.h5ad -c atlas.json
+        > cat atlas.json
+        {
+            "Coordinate" : "coord3D",
+            "Annotatinos" : [ "lineage" ],
+            "Meshes" : {
+                "body" : "example_data/body.obj" ,
+                "gut" : "example_data/gut.obj"     ,
+                "nueral" : "example_data/neural.obj" ,
+                "pharynx" : "example_data/pharynx.obj"
+            },
+            "mesh_coord" : "example_data/WT.coord.json",
+            "Genes" : [
+               "SMED30033583" ,
+               "SMED30011277" ,
+       ... genes you want to display ...
+               "SMED30031463" ,
+               "SMED30033839"
+            ]
+        }
+
+Notice:
+    The most time-consumptional and disk-cost part is the Genes data.
+      The more genes you need, the more time of this action and
+           the more disk space of atlas cache folder will cost.
+
+The structure of output atlas folder:
+      webcache
+        +---Anno
+             +---lineage.json
+        +---Gene
+             +---SMED30033583.json
+             +---SMED30011277.json
+             ...
+             +---SMED30031463.json
+             +---SMED30033839.json
+        +---summary.json
+        +---gene.json
+        +---meshes.json
+
+```
+
+### Detail usage of WebServer
+```
+>./vt3d_visitor WebServer -h
+
+Usage : vt3d_visitor WebServer [options]
+
+Options:
+            -p [port, default 8050]
+Example:
+        > vt3d_visitor WebServer
+
+        ...
+        never stop until you press Ctrl-C
+
 ```
