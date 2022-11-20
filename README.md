@@ -80,7 +80,13 @@ cd WebCache
 ```
 
 ### Browse your data now! ~
+####　Double Click the VT3D_Browser_release/index.html 
 
+![image](https://user-images.githubusercontent.com/8720584/202903482-df8a0d9e-90be-4bf8-9a5c-7138eb1f489b.png)
+
+#### then your got this broswe view:
+
+![image](https://user-images.githubusercontent.com/8720584/202903832-e68ab510-2fac-4efd-9d4c-58d477e6e164.png)
 
 
 ## Full usage of vt3d_visitor
