@@ -8,6 +8,9 @@ import pandas as pd
 from skimage import io as skio
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
+
+coord_key = 'coord3D'
+
 #################################################
 # BinConf
 # 
@@ -52,7 +55,7 @@ class BorderDetect:
         from scipy import ndimage
         mask = ndimage.binary_closing(mask).astype(int)
         mask = ndimage.binary_opening(mask).astype(int)
-        
+
         for y in range(0,height):
             for x in range(1,width-1):
                 if mask[y,x-1]==0 and mask[y,x]==0 and mask[y,x+1]==1:
@@ -84,7 +87,7 @@ class ROIManager:
         self.ymax = ymax
         self.zmin = zmin
         self.zmax = zmax
-    
+
     ###################################
     # always filter nax before min
     def filterDFMax(self,df):
@@ -122,7 +125,7 @@ class BodyInfo:
         self.bin_draw_scale = bin_draw_scale
 
     def loadAllPoints(self,inh5, roi):
-        bd = inh5.getBodyXYZ('coord3D',int)
+        bd = inh5.getBodyXYZ(coord_key,int)
         #format x axis by roi first
         bd = roi.filterDFMax(bd)
         bd = roi.filterAndResetDFMin(bd)
@@ -170,7 +173,7 @@ class BodyInfo:
 
     def getAPML_border(self):   
         return self.APML_x_idx , self.APML_y_idx           
-    
+
     #################################
     #  AP = x axis , DV = y axis
     #
@@ -238,7 +241,7 @@ class Gene3D:
     def loadExpr(self,inh5,genes,roi):
         a = []
         for gene in genes:  #hanle multi files here
-            aa = inh5.getGeneXYZE(gene,0,'coord3D',int)
+            aa = inh5.getGeneXYZE(gene,0,coord_key,int)
             if not aa.empty:
                 a.append(aa)
         if len(a) == 0 :
@@ -280,7 +283,7 @@ class Gene3D:
         show_data['z'] = show_data['z'].astype(int)
         show_data = show_data.groupby(['y', 'z']).agg(value=('value', 'max')).reset_index()
         return show_data
-   
+
 def GetBodyInfo(inh5,binconf,roi):
     body_binsize, body_scale = binconf.bodyBinConf()
     body_info = BodyInfo(body_binsize,body_scale)
@@ -288,7 +291,6 @@ def GetBodyInfo(inh5,binconf,roi):
     return body_info
 
 def GetBackground(view,body_info,binconf):
-    
     if view == "APML" :
         body_info.calcAPML_border()
         W,H = body_info.getAPML_WH()
@@ -429,7 +431,7 @@ class OneChannelData:
             #    print(self.files)
             #    print(self.colors)
             #    print('-------------',flush=True)
-         
+
     def GetImage(self, view, body_info):
         if self.valid:
             return DrawSingleFISH(view,body_info,self.gene_expr,self.colors)
@@ -466,6 +468,7 @@ Options:
                    [MLDV -> yz panel]
             --scalebar [default 200]
             --drawborder [default 1, must be 1/0]
+            --spatial_key [defaut coord3D, the keyname of coordinate array in obsm]
 
        optional ROI options:
             --xmin [default None]
@@ -536,6 +539,7 @@ def mep_main(argv:[]):
                                          "ymax=",
                                          "zmax=",
                                       "binsize=",
+                                   "spatial_key="
                                 "borderbinsize=",
                                      "scalebar="])
     except getopt.GetoptError:
@@ -577,13 +581,15 @@ def mep_main(argv:[]):
             zmax = int(arg)
         elif opt == "--view":
             view = arg
+        elif opt == "--spatial_key":
+            coord_key = arg
         elif opt == "--binsize":
             binsize = int(arg)
         elif opt == "--scalebar":
             scalebar = int(arg)
         elif opt == "--borderbinsize":
             borderbinsize = int(arg)
-    
+
     ###############################################################################
     # Sanity check
     if indata == "" or prefix == "":
@@ -599,14 +605,14 @@ def mep_main(argv:[]):
     # Load the body points 
     print('Loading body now ...',flush=True)
     body_info = GetBodyInfo(inh5ad,binconf,roi)
-     
+
     ###############################################################################
     # Load the gene expr points and draw
     target_lists = [ r_gene , b_gene, c_gene, p_gene, g_gene, m_gene, y_gene ]
     draw_list = []
     for i in range(len(target_lists)):
         draw_list.append(OneChannelData(target_lists[i],colors[i]))
-    
+
     print('Loading expression now ...',flush=True)
     for ocd in draw_list:
         ocd.PrepareData(inh5ad,binconf,roi)
