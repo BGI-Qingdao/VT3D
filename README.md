@@ -170,6 +170,7 @@ Options:
 
        optional options:
             --thickness [default 16]
+            --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
 Example:
     > vt3d_visitor AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
@@ -188,6 +189,7 @@ Options:
             -i <input.h5ad>
             -o <output prefix>
             -c <conf.json>
+            --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
 Example:
         > vt3d_visitor GrayScaleTif -i in.h5ad -o test -c organ.json
         > cat organ.json
