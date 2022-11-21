@@ -69,7 +69,7 @@ The test3d.tif (opened by ImageJ 3DViewer)  :
 ### Generate web cache folder
 
 ```
-./vt3d_visitor GrayScaleTif -i  example_data/WT.VT3D.h5ad -c  example_data/atlas.json -o WebCache
+./vt3d_visitor WebCache -i  example_data/WT.VT3D.h5ad -c  example_data/atlas.json -o WebCache
 ```
 
 ### Start web server
