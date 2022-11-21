@@ -8,7 +8,6 @@ import pandas as pd
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 from vt3d_tools.obj_wrapper import OBJWrapper
 
-
 def check_file(filename):
     if not os.path.isfile(filename):
         print(f'Error: invalid input file :{filename}!' ,flush=True)

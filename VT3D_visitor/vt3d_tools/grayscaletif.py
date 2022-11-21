@@ -7,6 +7,8 @@ import pandas as pd
 from skimage import io
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
+coord_key = 'coord3D'
+
 def savedata2json(data,filename):
     text = json.dumps(data)
     textfile = open(filename, "w")
@@ -25,9 +27,10 @@ Options:
             -i <input.h5ad>
             -o <output prefix>
             -c <conf.json>
+            --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
 Example:
-	> vt3d_visitor GrayScaleTif -i in.h5ad -o test -c organ.json
-	> cat organ.json
+        > vt3d_visitor GrayScaleTif -i in.h5ad -o test -c organ.json
+        > cat organ.json
         {
             "binsize" : 10,
             "keyname" : "lineage",
@@ -97,12 +100,12 @@ class Bin3D:
     def __init__(self, xyza , binsize=10):
         self.basedata = xyza
         self.binsize = binsize
-        
+
     def getRect(self):
-        xmin = np.min(self.basedata['x'])               
-        xmax = np.max(self.basedata['x'])               
-        ymin = np.min(self.basedata['y'])               
-        ymax = np.max(self.basedata['y'])               
+        xmin = np.min(self.basedata['x'])
+        xmax = np.max(self.basedata['x'])
+        ymin = np.min(self.basedata['y'])
+        ymax = np.max(self.basedata['y'])
         return RectBoundary(xmin,xmax,ymin,ymax)
 
     def binz(self):
@@ -150,7 +153,7 @@ def grayscaletif_main(argv:[]):
     conf_file = ''
 
     try:
-        opts, args = getopt.getopt(argv,"hi:o:c:",["help"])
+        opts, args = getopt.getopt(argv,"hi:o:c:",["spatial_key=","help"])
     except getopt.GetoptError:
         grayscaletif_usage()
         sys.exit(2)
@@ -160,6 +163,8 @@ def grayscaletif_main(argv:[]):
             sys.exit(0)
         elif opt in ("-o"):
             prefix = arg
+        elif opt in ("--spatial_key"):
+            coord_key = arg
         elif opt in ("-i"):
             inh5data = arg
         elif opt in ("-c",):
@@ -198,7 +203,7 @@ def grayscaletif_main(argv:[]):
     if not inh5ad.hasAnno(confdata['keyname']):
         print('Error: invalid keyname !',flush=True)       
         sys.exit(3)
-    xyza = inh5ad.getCellXYZA('coord3D',int,confdata['keyname'])   
+    xyza = inh5ad.getCellXYZA(coord_key,int,confdata['keyname'])   
     bin3d = Bin3D(xyza,int(confdata['binsize']))
     tiff3d = bin3d.ToTIFF(confdata['targets'],confdata['grayvalue'])
     io.imsave(f'{prefix}.tif',tiff3d)

@@ -4,6 +4,8 @@ import getopt
 import sys
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
+coord_key = 'coord3D'
+
 def anyslice_usage():
     print("""
 Usage : vt3d_visitor AnySlice [options]
@@ -12,12 +14,13 @@ Options:
        required options:
             -i <input.h5ad>
             -o <output prefix>
-            --p0 <coordinate of p0>         
-            --p1 <coordinate of p1>         
-            --p2 <coordinate of p2>         
+            --p0 <coordinate of p0>
+            --p1 <coordinate of p1>
+            --p2 <coordinate of p2>
 
        optional options:
             --thickness [default 16]
+            --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
 Example:
     > vt3d_visitor AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
@@ -84,6 +87,7 @@ def anyslice_main(argv:[]):
                                          "p0=",
                                          "p1=",
                                          "p2=",
+                                "spatial_key=",
                                   "thickness="])
     except getopt.GetoptError:
         anyslice_usage()
@@ -98,6 +102,8 @@ def anyslice_main(argv:[]):
             prefix = arg
         elif opt == "--thinkness" :
             thickness = int(arg)
+        elif opt == "spatial_key":
+            coord_key = arg
         elif opt == "--p0" :
             _, p0 = vector_from_str(arg)
         elif opt == "--p1" :
@@ -113,7 +119,7 @@ def anyslice_main(argv:[]):
     #init plane
     plane = Plane(p0,p1,p2)
     #filter cells
-    xyzc = inh5ad.getCellXYZC('coord3D',int)
+    xyzc = inh5ad.getCellXYZC(coord_key,int)
     dist = plane.distance(xyzc)
     xyzc['dist'] = dist
     xyzc['abs_dis'] = np.abs(dist)
