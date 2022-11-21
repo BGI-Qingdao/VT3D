@@ -140,7 +140,8 @@ Options:
                    [MLDV -> yz panel]
             --scalebar [default 200]
             --drawborder [default 1, must be 1/0]
-
+            --spatial_key [defaut coord3D, the keyname of coordinate array in obsm]
+            
        optional ROI options:
             --xmin [default None]
             --ymin [default None]
