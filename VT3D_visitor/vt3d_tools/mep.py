@@ -299,7 +299,7 @@ def GetBackground(view,body_info,binconf):
         # draw background
         draw_array[yids,xids,:] = 255
         # draw scale bar
-        draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
+        #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
         return draw_array
     elif view == "APDV" :
         body_info.calcAPDV_border()
@@ -310,7 +310,7 @@ def GetBackground(view,body_info,binconf):
         draw_array[yids,xids,:] = 255
         # draw scale bar
         #draw_array[[H-10,H-9,H-8],W-15:W-5,:]=255
-        draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
+        #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
         #draw_array[H-20:H-10,W-15:W-12,:]=255
         return draw_array
         #return None
@@ -324,7 +324,7 @@ def GetBackground(view,body_info,binconf):
         # draw scale bar
         #draw_array[[H-10,H-9,H-8],W-15:W-5,:]=255
         #draw_array[H-20:H-10,W-15:W-12,:]=255
-        draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
+        #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
         #draw_array[H-20:H-10,W-15:W-12,:]=255
         return draw_array
 
@@ -539,7 +539,7 @@ def mep_main(argv:[]):
                                          "ymax=",
                                          "zmax=",
                                       "binsize=",
-                                   "spatial_key="
+                                  "spatial_key=",
                                 "borderbinsize=",
                                      "scalebar="])
     except getopt.GetoptError:
@@ -582,6 +582,7 @@ def mep_main(argv:[]):
         elif opt == "--view":
             view = arg
         elif opt == "--spatial_key":
+            global coord_key 
             coord_key = arg
         elif opt == "--binsize":
             binsize = int(arg)

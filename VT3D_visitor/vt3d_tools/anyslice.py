@@ -4,7 +4,6 @@ import getopt
 import sys
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
-coord_key = 'coord3D'
 
 def anyslice_usage():
     print("""
@@ -78,6 +77,7 @@ def anyslice_main(argv:[]):
     p0 = []
     p1 = []
     p2 = []
+    coord_key = 'coord3D'
 
     ##############################################
     # parse parameters

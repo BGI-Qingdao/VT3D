@@ -7,7 +7,6 @@ import pandas as pd
 from skimage import io
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
-coord_key = 'coord3D'
 
 def savedata2json(data,filename):
     text = json.dumps(data)
@@ -151,6 +150,7 @@ def grayscaletif_main(argv:[]):
     inh5data = ''
     prefix = ''
     conf_file = ''
+    coord_key = 'coord3D'
 
     try:
         opts, args = getopt.getopt(argv,"hi:o:c:",["spatial_key=","help"])
