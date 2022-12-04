@@ -21,10 +21,10 @@ A python3 environment with below packages:
 git clone https://github.com/BGI-Qingdao/VT3D.git ./VT3D
 ```
 
-## Quick introduction of vt3d_visitor with test data
+## Quick introduction of vt3d with test data
 
-* enter VT3D_visitor folder
-``` cd ./VT3D/VT3D_visitor ```
+* enter VT3D folder
+``` cd ./VT3D/```
 * prepare the test data
 ```
 cd ./example_data
@@ -36,11 +36,29 @@ The input data is h5ad base and save 3D corrdinate in obsm:
 
 ![image](https://user-images.githubusercontent.com/8720584/199381217-96741181-13ae-4b88-b4f4-817544e50eea.png)
 
+### Browser your data in two step
+
+#### Generate web cache folder
+
+```
+./vt3d WebCache -i  example_data/WT.VT3D.h5ad -c  example_data/atlas.json -o WebCache
+```
+
+#### Start web server and browser your data now!
+
+```
+cd WebCache
+../vt3d_visitor WebServer -p 8010
+```
+
+now open your broswer and try ```http://127.0.0.1:8010/index.html```
+
+![image](https://user-images.githubusercontent.com/8720584/202903832-e68ab510-2fac-4efd-9d4c-58d477e6e164.png)
 
 ### Generate MEP image
 
 ```
-./vt3d_visitor MEP -i example_data/WT.VT3D.h5ad -o gut.SMED30007704 -g SMED30007704
+./vt3d MEP -i example_data/WT.VT3D.h5ad -o gut.SMED30007704 -g SMED30007704
 ```
 The output gut.SMED30007704.tif (opened by any image tool is OK) :
 
@@ -50,13 +68,13 @@ The output gut.SMED30007704.tif (opened by any image tool is OK) :
 ### AnySlice
 
 ```
-./vt3d_visitor  AnySlice -i example_data/WT.VT3D.h5ad -o test --p0 '0,0,200' --p1 '1,0,200' --p2 '1,1,200'
+./vt3d AnySlice -i example_data/WT.VT3D.h5ad -o test --p0 '0,0,200' --p1 '1,0,200' --p2 '1,1,200'
 ```
 
 ### Generate grayscale 3D tiff
 
 ```
-./vt3d_visitor GrayScaleTif -i  example_data/WT.VT3D.h5ad  -o test3d -c example_data/organ.json
+./vt3d GrayScaleTif -i  example_data/WT.VT3D.h5ad  -o test3d -c example_data/organ.json
 ```
 
 The test3d.tif (opened by ImageJ 3DViewer)  :
@@ -64,29 +82,6 @@ The test3d.tif (opened by ImageJ 3DViewer)  :
 ![image](https://user-images.githubusercontent.com/8720584/199373130-87fa5d7f-f07e-43e6-a402-a5e9176bbc64.png)
 
 
-## Quick introduction of vt3d_browser
-
-### Generate web cache folder
-
-```
-./vt3d_visitor WebCache -i  example_data/WT.VT3D.h5ad -c  example_data/atlas.json -o WebCache
-```
-
-### Start web server
-
-```
-cd WebCache
-../vt3d_visitor WebServer -p 8010
-```
-
-### Browse your data now! ~
-####　Double Click the VT3D_Browser_release/index.html 
-
-![image](https://user-images.githubusercontent.com/8720584/202903482-df8a0d9e-90be-4bf8-9a5c-7138eb1f489b.png)
-
-#### then your got this broswe view:
-
-![image](https://user-images.githubusercontent.com/8720584/202903832-e68ab510-2fac-4efd-9d4c-58d477e6e164.png)
 
 
 ## Full usage of vt3d_visitor

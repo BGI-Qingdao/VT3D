@@ -19,7 +19,7 @@ def savedata2json(data,filename):
 #
 def grayscaletif_usage():
     print("""
-Usage : vt3d_visitor GrayScaleTif [options]
+Usage : vt3d GrayScaleTif [options]
 
 Options:
        required options:
@@ -28,7 +28,7 @@ Options:
             -c <conf.json>
             --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
 Example:
-        > vt3d_visitor GrayScaleTif -i in.h5ad -o test -c organ.json
+        > vt3d GrayScaleTif -i in.h5ad -o test -c organ.json
         > cat organ.json
         {
             "binsize" : 10,

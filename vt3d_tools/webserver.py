@@ -8,12 +8,12 @@ from http.server import *
 #
 def webserver_usage():
     print("""
-Usage : vt3d_visitor WebServer [options]
+Usage : vt3d WebServer [options]
 
 Options:
             -p [port, default 8050]
 Example:
-        > vt3d_visitor WebServer 
+        > vt3d WebServer 
         
         ...
         never stop until you press Ctrl-C

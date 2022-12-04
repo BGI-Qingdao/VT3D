@@ -32,7 +32,7 @@ def savedata2json(data,filename):
 #
 def webcache_usage():
     print("""
-Usage : vt3d_visitor WebCache [options]
+Usage : vt3d WebCache [options]
 
 Options:
        required options:
@@ -40,7 +40,7 @@ Options:
             -c <conf.json>
             -o [output prefix, default webcace]
 Example:
-        > vt3d_visitor WebCache -i in.h5ad -c atlas.json
+        > vt3d WebCache -i in.h5ad -c atlas.json
         > cat atlas.json
         {
             "Coordinate" : "coord3D",
@@ -185,7 +185,7 @@ def webcache_main(argv:[]):
     #######################################
     # cp html and js
     base=os.path.dirname(os.path.realpath(__file__))
-    base=f'{base}/../../VT3D_Browser_release/'
+    base=f'{base}/../vt3d_browser'
     flist = [  '6f0a76321d30f3c8120915e57f7bd77e.ttf',
                'index.html',
                'index.js',

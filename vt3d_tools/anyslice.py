@@ -7,7 +7,7 @@ from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
 def anyslice_usage():
     print("""
-Usage : vt3d_visitor AnySlice [options]
+Usage : vt3d AnySlice [options]
 
 Options:
        required options:
@@ -21,7 +21,7 @@ Options:
             --thickness [default 16]
             --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
 Example:
-    > vt3d_visitor AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
+    > vt3d AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
     test.h5ad
      

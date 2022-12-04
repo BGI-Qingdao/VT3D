@@ -446,7 +446,7 @@ class OneChannelData:
 #
 def mep_usage():
     print("""
-Usage : vt3d_visitor MEP  [options]
+Usage : vt3d MEP  [options]
 
 Options:
        required options:
@@ -480,7 +480,7 @@ Options:
             --ymax [default None]
             --zmax [default None]
 Example :
-     vt3d_visitor MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD 
+     vt3d MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD 
 """)
 
 def saveimage(fname ,draw_matrix):

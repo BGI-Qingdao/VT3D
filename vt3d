@@ -9,7 +9,7 @@ import time
 # usage
 def main_usage():
     print("""
-Usage : vt3d_visitor <action> [options ]
+Usage : vt3d <action> [options ]
           -h/--help           show this short usage
 Action:
           -------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ Action:
           -------------------------------------------------------------------------------
 
 Detail usage of each action:
-        vt3d_visitor <action> -h
+        vt3d <action> -h
 """)
 
 #          ROI                   3D ROI
