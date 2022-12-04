@@ -32,6 +32,7 @@ Example:
         > cat organ.json
         {
             "binsize" : 10,
+            "margin" : 10,
             "keyname" : "lineage",
             "targets": [
                 "all",
@@ -96,7 +97,7 @@ def Slice2TIF(xya, rect, binsize, targets, grayvalues):
     return canvas
 
 class Bin3D:
-    def __init__(self, xyza , binsize=10):
+    def __init__(self, xyza , binsize=10,margin=10):
         self.basedata = xyza
         self.binsize = binsize
 
@@ -105,7 +106,7 @@ class Bin3D:
         xmax = np.max(self.basedata['x'])
         ymin = np.min(self.basedata['y'])
         ymax = np.max(self.basedata['y'])
-        return RectBoundary(xmin,xmax,ymin,ymax)
+        return RectBoundary(xmin,xmax,ymin,ymax,self.margin)
 
     def binz(self):
         self.zmin = np.min(self.basedata['z'])
@@ -187,6 +188,9 @@ def grayscaletif_main(argv:[]):
     if int(confdata['binsize']) < 1:
         print('Error: too small binsize !',flush=True)
         sys.exit(3)
+    if int(confdata['margin']) < 0:
+        print('Error: too small margin!',flush=True)
+        sys.exit(3)
     if int(confdata['binsize']) < 10:
         print('Warning: small binsize will generate huge tiff file with too much backgroud !',flush=True)
     if confdata['keyname'] == '' :
@@ -203,8 +207,8 @@ def grayscaletif_main(argv:[]):
     if not inh5ad.hasAnno(confdata['keyname']):
         print('Error: invalid keyname !',flush=True)       
         sys.exit(3)
-    xyza = inh5ad.getCellXYZA(coord_key,int,confdata['keyname'])   
-    bin3d = Bin3D(xyza,int(confdata['binsize']))
+    xyza = inh5ad.getCellXYZA(coord_key,int,confdata['keyname'])
+    bin3d = Bin3D(xyza,int(confdata['binsize']),int(confdata['margin']))
     tiff3d = bin3d.ToTIFF(confdata['targets'],confdata['grayvalue'])
     io.imsave(f'{prefix}.tif',tiff3d)
     bin3d.save_coordconf(f'{prefix}.coord.json')

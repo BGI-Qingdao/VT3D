@@ -290,14 +290,15 @@ def GetBodyInfo(inh5,binconf,roi):
     body_info.loadAllPoints(inh5,roi)
     return body_info
 
-def GetBackground(view,body_info,binconf):
+def GetBackground(view,body_info,binconf,drawborder):
     if view == "APML" :
         body_info.calcAPML_border()
         W,H = body_info.getAPML_WH()
         draw_array = np.zeros((H,W,3),dtype='int')
-        xids,yids = body_info.getAPML_border()
-        # draw background
-        draw_array[yids,xids,:] = 255
+        if drawborder==1:
+            xids,yids = body_info.getAPML_border()
+            # draw background
+            draw_array[yids,xids,:] = 255
         # draw scale bar
         #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
         return draw_array
@@ -305,10 +306,11 @@ def GetBackground(view,body_info,binconf):
         body_info.calcAPDV_border()
         W,H = body_info.getAPDV_WH()
         draw_array = np.zeros((H,W,3),dtype='int')
-        xids,yids = body_info.getAPDV_border()
-        # draw background
-        draw_array[yids,xids,:] = 255
-        # draw scale bar
+        if drawborder==1:
+            xids,yids = body_info.getAPDV_border()
+            # draw background
+            draw_array[yids,xids,:] = 255
+            # draw scale bar
         #draw_array[[H-10,H-9,H-8],W-15:W-5,:]=255
         #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
         #draw_array[H-20:H-10,W-15:W-12,:]=255
@@ -318,9 +320,10 @@ def GetBackground(view,body_info,binconf):
         body_info.calcMLDV_border()
         W,H = body_info.getMLDV_WH()
         draw_array = np.zeros((H,W,3),dtype='int')
-        xids,yids = body_info.getMLDV_border()
-        # draw background
-        draw_array[yids,xids,:] = 255
+        if drawborder==1:
+            xids,yids = body_info.getMLDV_border()
+            # draw background
+            draw_array[yids,xids,:] = 255
         # draw scale bar
         #draw_array[[H-10,H-9,H-8],W-15:W-5,:]=255
         #draw_array[H-20:H-10,W-15:W-12,:]=255
@@ -466,8 +469,7 @@ Options:
                    [APML -> xy panel]
                    [APDV -> xz panel]
                    [MLDV -> yz panel]
-            --scalebar [default 200]
-            --drawborder [default 1, must be 1/0]
+            --drawborder [default 0, must be 1/0]
             --spatial_key [defaut coord3D, the keyname of coordinate array in obsm]
 
        optional ROI options:
@@ -525,6 +527,7 @@ def mep_main(argv:[]):
     binsize = 5
     borderbinsize = 20
     scalebar = 200
+    drawborder=0
 
     ###############################################################################
     # Parse the arguments
@@ -540,6 +543,7 @@ def mep_main(argv:[]):
                                          "zmax=",
                                       "binsize=",
                                   "spatial_key=",
+                                   "drawborder=",
                                 "borderbinsize=",
                                      "scalebar="])
     except getopt.GetoptError:
@@ -567,6 +571,8 @@ def mep_main(argv:[]):
             c_gene.append(arg)
         elif opt == "-p" :
             p_gene.append(arg)
+        elif opt == "--drawborder":
+            drawborder=int(arg)
         elif opt == "--xmin":
             xmin = int(arg)
         elif opt == "--ymin":
@@ -618,7 +624,7 @@ def mep_main(argv:[]):
     for ocd in draw_list:
         ocd.PrepareData(inh5ad,binconf,roi)
     # get sample border
-    draw_image = GetBackground(view,body_info,binconf)
+    draw_image = GetBackground(view,body_info,binconf,drawborder)
     for ocd in draw_list:
         ocd_image = ocd.GetImage(view,body_info)
         if ocd_image is None:

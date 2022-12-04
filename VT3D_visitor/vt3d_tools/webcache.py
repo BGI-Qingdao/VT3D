@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
+import shutil
 import json
 import getopt
 import numpy as np
@@ -143,7 +144,7 @@ def webcache_main(argv:[]):
             sys.exit(3)
     for genename in confdata['Genes']:
         if not inh5ad.hasGene(genename):
-            print(f'Error: invalid Annotatino :{annokey}!' ,flush=True)
+            print(f'Error: invalid gene :{genename}!' ,flush=True)
             sys.exit(3)
     if not inh5ad.hasCoord(confdata['Coordinate']):
         print(f'Error: invalid Coordinate :{confdata["Coordinate"]}!' ,flush=True)
@@ -181,3 +182,18 @@ def webcache_main(argv:[]):
     for gene in confdata['Genes']:
         xyze = inh5ad.getGeneXYZE(gene,0,confdata['Coordinate'],int)
         savedata2json(xyze.to_numpy().tolist(),f'{prefix}/Gene/{gene}.json')
+    #######################################
+    # cp html and js
+    base=os.path.dirname(os.path.realpath(__file__))
+    base=f'{base}/../../VT3D_Browser_release/'
+    flist = [  '6f0a76321d30f3c8120915e57f7bd77e.ttf',
+               'index.html',
+               'index.js',
+               'index.js.map',
+               'manifest.js',
+               'manifest.js.map',
+               'vendor.js',
+               'vendor.js.map',]
+    for xx in flist:
+        shutil.copyfile(f'{base}/{xx}', f'{prefix}/{xx}')
+
