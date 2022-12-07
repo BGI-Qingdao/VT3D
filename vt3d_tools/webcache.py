@@ -152,16 +152,23 @@ def webcache_main(argv:[]):
         sys.exit(3)  
 
     #######################################
-    # load objs
-        
-    #######################################
     # create main folder, summary.json gene.json
     create_folder(f'{prefix}')
     create_folder(f'{prefix}/Anno')
     create_folder(f'{prefix}/Gene')
     #######################################
+    # generate mesh json
+    if len(confdata['Meshes'])>1:
+       coord_file = confdata['mesh_coord']
+       meshes = OBJWrapper(coord_file)
+       for meshname in confdata['Meshes']:
+           meshes.add_mesh(meshname,confdata['Meshes'][meshname]) 
+       savedata2json(meshes.get_data(),f'{prefix}/meshes.json')
+    #######################################
     # generate summary and gene json
     summary = inh5ad.getSummary(confdata['Coordinate'] ,confdata['Annotatinos'] , confdata['Genes'])
+    if len(confdata['Meshes'])>1:
+        summary = meshes.update_summary(summary)
     savedata2json(summary, f'{prefix}/summary.json')      
     savedata2json(confdata['Genes'],f'{prefix}/gene.json')
     #######################################
@@ -171,13 +178,6 @@ def webcache_main(argv:[]):
         mapper = summary['annomapper'][f'{anno}_legend2int']
         xyza['annoid'] = xyza.apply(lambda row : mapper[row['anno']],axis=1)
         savedata2json(xyza[['x','y','z','annoid']].to_numpy().tolist(),f'{prefix}/Anno/{anno}.json')
-    #######################################
-    # generate mesh json
-    coord_file = confdata['mesh_coord']
-    meshes = OBJWrapper(coord_file)
-    for meshname in confdata['Meshes']:
-        meshes.add_mesh(meshname,confdata['Meshes'][meshname]) 
-    savedata2json(meshes.get_data(),f'{prefix}/meshes.json')
     #######################################
     # generate gene json
     for gene in confdata['Genes']:
