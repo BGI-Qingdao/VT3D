@@ -7,7 +7,6 @@ import pandas as pd
 from skimage import io
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
-
 def savedata2json(data,filename):
     text = json.dumps(data)
     textfile = open(filename, "w")
@@ -26,14 +25,14 @@ Options:
             -i <input.h5ad>
             -o <output prefix>
             -c <conf.json>
-            --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
+            --spatial_key [default 'spatial3D', the keyname of coordinate array in obsm]
 Example:
         > vt3d GrayScaleTif -i in.h5ad -o test -c organ.json
         > cat organ.json
         {
             "binsize" : 10,
             "margin" : 10,
-            "keyname" : "lineage",
+            "keyname" : "annotation",
             "targets": [
                 "all",
                 "Gut",
@@ -100,6 +99,7 @@ class Bin3D:
     def __init__(self, xyza , binsize=10,margin=10):
         self.basedata = xyza
         self.binsize = binsize
+        self.margin = margin
 
     def getRect(self):
         xmin = np.min(self.basedata['x'])
@@ -151,7 +151,7 @@ def grayscaletif_main(argv:[]):
     inh5data = ''
     prefix = ''
     conf_file = ''
-    coord_key = 'coord3D'
+    coord_key = 'spatial3D'
 
     try:
         opts, args = getopt.getopt(argv,"hi:o:c:",["spatial_key=","help"])

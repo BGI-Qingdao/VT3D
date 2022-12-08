@@ -9,7 +9,7 @@ from skimage import io as skio
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
 
-coord_key = 'coord3D'
+coord_key = 'spatial3D'
 
 #################################################
 # BinConf
@@ -470,7 +470,7 @@ Options:
                    [APDV -> xz panel]
                    [MLDV -> yz panel]
             --drawborder [default 0, must be 1/0]
-            --spatial_key [defaut coord3D, the keyname of coordinate array in obsm]
+            --spatial_key [defaut spatial3D, the keyname of coordinate array in obsm]
 
        optional ROI options:
             --xmin [default None]

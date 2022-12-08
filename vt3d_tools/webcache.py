@@ -43,7 +43,7 @@ Example:
         > vt3d WebCache -i in.h5ad -c atlas.json
         > cat atlas.json
         {
-            "Coordinate" : "coord3D",
+            "Coordinate" : "spatial3D",
             "Annotatinos" : [ "lineage" ],
             "Meshes" : {
                 "body" : "example_data/body.obj" ,

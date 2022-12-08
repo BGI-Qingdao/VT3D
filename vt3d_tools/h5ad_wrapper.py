@@ -10,22 +10,22 @@ class H5ADWrapper:
     #######################################################
     # get xyzv
     ######################################################
-    def getBodyXYZ(self,obsm_key='coord3D',dtype=int):
+    def getBodyXYZ(self,obsm_key='spatial3D',dtype=int):
         xyz = self.data.obsm[obsm_key]
         df = pd.DataFrame(data=xyz,columns=['x','y','z'],dtype=dtype)
         return df
 
-    def getCellXYZC(self,obsm_key='coord3D',dtype=int):
+    def getCellXYZC(self,obsm_key='spatial3D',dtype=int):
         df = self.getBodyXYZ(obsm_key,dtype)
         df['cell'] = self.data.obs.index.to_numpy()
         return df
 
-    def getCellXYZA(self,obsm_key='coord3D',dtype=int,obs_key='lineage'):
+    def getCellXYZA(self,obsm_key='spatial3D',dtype=int,obs_key='lineage'):
         df = self.getBodyXYZ(obsm_key,dtype)
         df['anno'] = self.data.obs[obs_key].to_numpy()
         return df 
 
-    def getGeneXYZE(self,genename,exp_cutoff=0,obsm_key='coord3D',dtype=int):
+    def getGeneXYZE(self,genename,exp_cutoff=0,obsm_key='spatial3D',dtype=int):
         df = self.getBodyXYZ(obsm_key,dtype)
         genedata = self.data[:,genename]
         exp = genedata.X.toarray()

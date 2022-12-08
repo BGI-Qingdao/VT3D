@@ -19,7 +19,7 @@ Options:
 
        optional options:
             --thickness [default 16]
-            --spatial_key [default 'coord3D', the keyname of coordinate array in obsm]
+            --spatial_key [default 'spatial3D', the keyname of coordinate array in obsm]
 Example:
     > vt3d AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
@@ -77,7 +77,7 @@ def anyslice_main(argv:[]):
     p0 = []
     p1 = []
     p2 = []
-    coord_key = 'coord3D'
+    coord_key = 'spatial3D'
 
     ##############################################
     # parse parameters
