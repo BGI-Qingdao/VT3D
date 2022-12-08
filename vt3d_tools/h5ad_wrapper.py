@@ -55,6 +55,9 @@ class H5ADWrapper:
 
     #def has
 
+    def AllGenesList(self):
+        return self.data.var.index.tolist()
+
     #######################################################
     # Json API for webcache
     ######################################################

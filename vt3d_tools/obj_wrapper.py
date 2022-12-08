@@ -6,6 +6,12 @@ class OBJWrapper:
     def __init__(self,coordfile):
         self.data = [[],[],[]] # legend, vector, faces
         self.init_coord(coordfile)
+        self.mesh_xmin = 0
+        self.mesh_xmax = 0
+        self.mesh_ymin = 0
+        self.mesh_ymax = 0
+        self.mesh_zmin = 0
+        self.mesh_zmax = 0
 
     def init_coord(self,coordfile):
         confdata = json.load(open(coordfile))
@@ -34,7 +40,33 @@ class OBJWrapper:
         vectors = vectors[['v1','v2','v3']].copy()
         vectors.columns = ['x','y','z']
         vectors = self.reset_coord(vectors)
-        
+        xmin = vectors['x'].min();      
+        xmax = vectors['x'].max();      
+        ymin = vectors['y'].min();      
+        ymax = vectors['y'].max();      
+        zmin = vectors['z'].min();      
+        zmax = vectors['z'].max();      
+        if len(self.data[0])==0:
+            self.mesh_xmin = xmin
+            self.mesh_xmax = xmax
+            self.mesh_ymin = ymin
+            self.mesh_ymax = ymax
+            self.mesh_zmin = zmin
+            self.mesh_zmax = zmax
+        else:
+            if xmin < self.mesh_xmin : 
+                self.mesh_xmin = xmin
+            if ymin < self.mesh_ymin : 
+                self.mesh_ymin = ymin
+            if zmin < self.mesh_zmin : 
+                self.mesh_zmin = zmin
+            if xmax > self.mesh_xmax : 
+                self.mesh_xmax = xmax
+            if ymax > self.mesh_ymax : 
+                self.mesh_ymax = ymax
+            if zmax > self.mesh_zmax : 
+                self.mesh_zmax = zmax
+
         faces = cache[cache['type'] == 'f'].copy()
         faces['i'] = faces.apply(lambda row: int(row['v1'].split('/')[0])-1, axis=1)
         faces['j'] = faces.apply(lambda row: int(row['v2'].split('/')[0])-1, axis=1)
@@ -47,3 +79,19 @@ class OBJWrapper:
 
     def get_data(self):
         return self.data
+
+    def update_summary(self,summary):
+        ret = summary
+        if self.mesh_xmin < ret['box']['xmin']:
+           ret['box']['xmin'] = self.mesh_xmin
+        if self.mesh_xmax > ret['box']['xmax']:
+           ret['box']['xmax'] = self.mesh_xmax
+        if self.mesh_ymin < ret['box']['ymin']:
+           ret['box']['ymin'] = self.mesh_ymin
+        if self.mesh_ymax > ret['box']['ymax']:
+           ret['box']['ymax'] = self.mesh_ymax
+        if self.mesh_zmin < ret['box']['zmin']:
+           ret['box']['zmin'] = self.mesh_zmin
+        if self.mesh_zmax > ret['box']['zmax']:
+           ret['box']['zmax'] = self.mesh_zmax
+        return ret

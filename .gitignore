@@ -1,4 +1,4 @@
-VT3D_visitor/vt3d_tools/__pycache__/*
 *.tif
 *.h5ad
-VT3D_visitor/webcache
+*/webcache
+vt3d_tools/__pycache__/
