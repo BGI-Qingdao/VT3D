@@ -2,8 +2,24 @@ import numpy as np
 import pandas as pd
 import getopt
 import sys
+#import seaborn as sns
+#import matplotlib.pyplot as plt
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
+
+#def draw2DAnno(prefix, xy, anno):
+#    tmp = pd.DataFrame()
+#    tmp['v_spatial_x'] = xy[:,0] 
+#    tmp['v_spatial_y'] = xy[:,1] 
+#    tmp['anno'] = anno.to_list()
+#    W = tmp['v_spatial_x'].max() -  tmp['v_spatial_x'].min()+1
+#    H = tmp['v_spatial_y'].max() -  tmp['v_spatial_y'].min()+1
+#    plt.figure(figsize=((W/72.0)*12.5,(H/72.0)*11.0))
+#    sns.scatterplot(data=tmp, x="v_spatial_x", y="v_spatial_y",palette='tab20',hue="anno",legend='full')
+#    plt.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
+#    plt.subplots_adjust(top=0.95,left=0.05,bottom=0.05,right=0.80)
+#    plt.savefig(f'{prefix}.anno.pdf',dpi=72)
+#    plt.close()
 
 def anyslice_usage():
     print("""
@@ -24,7 +40,6 @@ Example:
     > vt3d AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
     test.h5ad
-     
 """)
 
 def vector_from_str(vstr):
@@ -78,7 +93,7 @@ def anyslice_main(argv:[]):
     p1 = []
     p2 = []
     coord_key = 'spatial3D'
-
+    #anno_key = 'annotation'
     ##############################################
     # parse parameters
     try:
@@ -100,9 +115,11 @@ def anyslice_main(argv:[]):
             indata = arg
         elif opt in ("-o"):
             prefix = arg
-        elif opt == "--thinkness" :
-            thickness = int(arg)
-        elif opt == "spatial_key":
+        elif opt == "--thickness" :
+            thickness = float(arg)
+        #elif opt == "--anno_key":
+        #    anno_key = arg
+        elif opt == "--spatial_key":
             coord_key = arg
         elif opt == "--p0" :
             _, p0 = vector_from_str(arg)
@@ -123,11 +140,13 @@ def anyslice_main(argv:[]):
     dist = plane.distance(xyzc)
     xyzc['dist'] = dist
     xyzc['abs_dis'] = np.abs(dist)
+    print(thickness/2,flush=True)
     xyzc = xyzc[xyzc['abs_dis'] <= (thickness/2)].copy()
     #project 2D
     new_xyzc = plane.project_coord(xyzc,xyzc['dist'].to_numpy())
     new_xyzc = project2D(new_xyzc)
     #create new h5ad 
     out_h5ad = inh5ad.extract_and_assign2D(new_xyzc['cell'].to_numpy(),new_xyzc[['2d_x','2d_y']].to_numpy())
-    out_h5ad.write(f'{prefix}.VT3D.h5ad', compression="gzip")
+    #draw2DAnno(prefix,new_xyzc[['2d_x','2d_y']].to_numpy(),out_h5ad.obs[anno_key])
+    out_h5ad.write(f'{prefix}.h5ad', compression="gzip")
     return None

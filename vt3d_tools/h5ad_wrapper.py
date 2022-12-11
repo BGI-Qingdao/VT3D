@@ -36,9 +36,9 @@ class H5ADWrapper:
     #######################################################
     # for any slice
     ######################################################
-    def extract_and_assign2D(self,cellarray,coord2D):
+    def extract_and_assign2D(self,cellarray,coord2D,newkey="spatial2D"):
         tmpdata = self.data[cellarray,:].copy()
-        tmpdata.obsm['coord2D'] = coord2D
+        tmpdata.obsm[newkey] = coord2D
         return tmpdata
 
     #######################################################
@@ -52,8 +52,6 @@ class H5ADWrapper:
 
     def hasCoord(self, coordkey):
         return coordkey in self.data.obsm
-
-    #def has
 
     def AllGenesList(self):
         return self.data.var.index.tolist()

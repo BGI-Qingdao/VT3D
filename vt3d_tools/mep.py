@@ -5,6 +5,7 @@ import sys
 import getopt
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from skimage import io as skio
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 
@@ -353,25 +354,65 @@ def FISH_scale(num_points, panel_expr):
     ret_data [ ret_data >255 ] = 255
     ret_data = ret_data.astype(int)
     return ret_data
-    
-def DrawSingleFISH_APML( body_info, expr, colors):
+
+def drawRdBu_raw(x,y,e,prefix,cname,W,H):
+    tmp = pd.DataFrame()
+    tmp['x'] = x
+    tmp['y'] = y
+    tmp['e'] = e
+    tmp = tmp.sort_values(by=['e'])
+    plt.figure(figsize=((W/100.0)*1.25,(H/100.0)*1.1))
+    plt.scatter(x=tmp['x'],y=tmp['y'],s=1,c=tmp['e'] ,cmap="RdYlBu_r",)
+    plt.xticks(())
+    plt.yticks(())
+    plt.xlabel('')
+    plt.ylabel('')
+    plt.xlim(0,W)
+    plt.ylim(0,H)
+    plt.colorbar(shrink=0.6,pad=0.05,fraction=0.1)
+    plt.subplots_adjust(top=0.95,left=0.05,bottom=0.05,right=0.95)
+    plt.savefig(f'{prefix}.{cname}.raw.pdf',dpi=100)
+    plt.close()
+
+def drawRdBu(x,y,e,prefix,cname,W,H):
+    tmp = pd.DataFrame()
+    tmp['x'] = x
+    tmp['y'] = y
+    tmp['e'] = e
+    tmp = tmp.sort_values(by=['e'])
+    plt.figure(figsize=((W/100.0)*1.25,(H/100.0)*1.1))
+    plt.scatter(x=tmp['x'],y=tmp['y'],s=1,c=tmp['e'] ,cmap="RdYlBu_r",)
+    plt.xticks(())
+    plt.yticks(())
+    plt.xlabel('')
+    plt.ylabel('')
+    plt.xlim(0,W)
+    plt.ylim(0,H)
+    plt.colorbar(shrink=0.6,pad=0.05,fraction=0.1)
+    plt.subplots_adjust(top=0.95,left=0.05,bottom=0.05,right=0.95)
+    plt.savefig(f'{prefix}.{cname}.pdf',dpi=100)
+    plt.close()
+
+def DrawSingleFISH_APML( body_info, expr, colors,cname,prefix ):
     W,H = body_info.getAPML_WH()
     draw_array = np.zeros((H,W,3),dtype='uint8')
     APML_expr = expr.getMIR_APML()
     APML_expr['y'] = APML_expr['y']+body_info.bin_draw_scale #shift the 1 pixel margin for border
     APML_expr['x'] = APML_expr['x']+body_info.bin_draw_scale #shift the 1 pixel margin for border
+    drawRdBu_raw(APML_expr['x'],APML_expr['y'],APML_expr['value'],prefix,cname,W,H)
     draw_expr =  FISH_scale(body_info.getAPML_num_points(),APML_expr['value'])
     draw_expr = draw_expr.astype(float)
     draw_expr = draw_expr / 255.0
+    drawRdBu(APML_expr['x'],APML_expr['y'],draw_expr,prefix,cname,W,H)
     r_channel = draw_expr * colors[0] 
     g_channel = draw_expr * colors[1] 
     b_channel = draw_expr * colors[2] 
     draw_array[APML_expr['y'],APML_expr['x'],0] = r_channel.astype(int) 
     draw_array[APML_expr['y'],APML_expr['x'],1] = g_channel.astype(int)
     draw_array[APML_expr['y'],APML_expr['x'],2] = b_channel.astype(int)
-    return draw_array 
+    return draw_array
 
-def DrawSingleFISH_APDV(body_info, expr, colors):
+def DrawSingleFISH_APDV(body_info, expr, colors,cname, prefix):
     W,H = body_info.getAPDV_WH()
     draw_array = np.zeros((H,W,3),dtype='uint8')
     APDV_expr = expr.getMIR_APDV()
@@ -388,7 +429,7 @@ def DrawSingleFISH_APDV(body_info, expr, colors):
     draw_array[APDV_expr['z'],APDV_expr['x'],2] = b_channel.astype(int)
     return draw_array 
 
-def DrawSingleFISH_DVML(body_info, expr, colors):
+def DrawSingleFISH_DVML(body_info, expr, colors,cname, prefix):
     W,H = body_info.getMLDV_WH()
     draw_array = np.zeros((H,W,3),dtype='uint8')
     MLDV_expr = expr.getMIR_MLDV()
@@ -405,39 +446,36 @@ def DrawSingleFISH_DVML(body_info, expr, colors):
     draw_array[MLDV_expr['y'],MLDV_expr['z'],2] = b_channel.astype(int)
     return draw_array 
 
-def DrawSingleFISH(view, body_info, gene_expr, color):
+def DrawSingleFISH(view, body_info, gene_expr, color,cname,prefix):
     if view == "APML" :
-        return DrawSingleFISH_APML(body_info, gene_expr, color)
+        return DrawSingleFISH_APML(body_info, gene_expr, color,cname,prefix)
     elif view == "APDV":
-        return DrawSingleFISH_APDV(body_info, gene_expr, color)
+        return DrawSingleFISH_APDV(body_info, gene_expr, color,cname,prefix)
     elif view == "MLDV":
-        return DrawSingleFISH_DVML(body_info, gene_expr, color)
+        return DrawSingleFISH_DVML(body_info, gene_expr, color,cname,prefix)
 
 ############################################################################
 # common codes for one channel
 #
 class OneChannelData:
-    def __init__(self,gene_list, channel_color):
+    def __init__(self,gene_list, channel_color, channel_name ):
         if len(gene_list) == 0 :
             self.valid = False
             return
         self.valid = True
         self.genes= gene_list
         self.colors = channel_color
+        self.channel_name = channel_name
 
     def PrepareData(self,inh5, binconf,roi):
         if self.valid:
             self.gene_expr = GetGeneExpr(inh5,self.genes,binconf,roi) 
             if self.gene_expr.valid == False:
                 self.valid = False
-            #else:
-            #    print(self.files)
-            #    print(self.colors)
-            #    print('-------------',flush=True)
 
-    def GetImage(self, view, body_info):
+    def GetImage(self, view, body_info, prefix):
         if self.valid:
-            return DrawSingleFISH(view,body_info,self.gene_expr,self.colors)
+            return DrawSingleFISH(view,body_info,self.gene_expr,self.colors,self.channel_name,prefix)
         else:
             return None
 
@@ -615,10 +653,11 @@ def mep_main(argv:[]):
 
     ###############################################################################
     # Load the gene expr points and draw
+    cnames       = [ 'red',   'blue', 'cyan','purple','green','magenta','yellow' ]
     target_lists = [ r_gene , b_gene, c_gene, p_gene, g_gene, m_gene, y_gene ]
     draw_list = []
     for i in range(len(target_lists)):
-        draw_list.append(OneChannelData(target_lists[i],colors[i]))
+        draw_list.append(OneChannelData(target_lists[i],colors[i],cnames[i]))
 
     print('Loading expression now ...',flush=True)
     for ocd in draw_list:
@@ -626,7 +665,7 @@ def mep_main(argv:[]):
     # get sample border
     draw_image = GetBackground(view,body_info,binconf,drawborder)
     for ocd in draw_list:
-        ocd_image = ocd.GetImage(view,body_info)
+        ocd_image = ocd.GetImage(view,body_info,prefix)
         if ocd_image is None:
             continue
         draw_image = mergeImage(draw_image,ocd_image)
