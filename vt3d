@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import sys
 import getopt
-import time
 
 ############################################################################
 # Main gateway: 
@@ -15,19 +14,13 @@ Action:
           -------------------------------------------------------------------------------
           MEP                   Maximun Expression Projection. (suit 3D structure to 2D)
           AnySlice              Extract 2D slice from any angle.
-          GrayScaleTif          Generate 3D TIFF gray scale image as input of Slicer3D.
-          WebCache              Generate cache files for WebCache action.
-          WebServer             Start the atlas server for VT3D_Browse in WebCache folder.
+          AtlasBrowser		Browser your data interactively.
+          Auxiliary 		More auxiliary tools
           -------------------------------------------------------------------------------
 
 Detail usage of each action:
         vt3d <action> -h
 """)
-
-#          ROI                   3D ROI
-#          PosAction             shift/rotate/scale the cell postions
-#                                                   "ROI",
-#                                                   "PosAction",
 
 # logic codes
 if __name__ == "__main__":
@@ -36,9 +29,8 @@ if __name__ == "__main__":
         exit(0)
     elif len(sys.argv) < 2 or not sys.argv[1] in ( "MEP",
                                                    "AnySlice",
-                                                   "GrayScaleTif",
-                                                   "WebCache",
-                                                   "WebServer",
+                                                   "Auxiliary",
+                                                   "AtlasBrowser",
                                                    ):
         main_usage()
         exit(1)
@@ -50,18 +42,13 @@ if __name__ == "__main__":
         from vt3d_tools.anyslice import anyslice_main
         anyslice_main(sys.argv[2:])
         exit(0)
-    elif sys.argv[1] == "GrayScaleTif" :
-        from vt3d_tools.grayscaletif import grayscaletif_main
-        grayscaletif_main(sys.argv[2:])
+    elif sys.argv[1] == "Auxiliary" :
+        from auxiliary import Auxiliary_main 
+        Auxiliary_main(sys.argv[2:])
         exit(0)
-    elif sys.argv[1] == "WebCache" :
-        from vt3d_tools.webcache import webcache_main
-        webcache_main(sys.argv[2:])
-        exit(0)
-    elif sys.argv[1] == "WebServer" :
-        from vt3d_tools.webserver import webserver_main
-        webserver_main(sys.argv[2:])
-        exit(0)
+    elif sys.argv[1] == "AtlasBrowser" :
+        from atlas_browser import AtlasBrowser_main
+        AtlasBrowser_main(sys.argv[2:])
     else:
         main_usage()
         exit(1)

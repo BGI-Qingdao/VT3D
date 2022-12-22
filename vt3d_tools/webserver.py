@@ -8,10 +8,10 @@ from http.server import *
 #
 def webserver_usage():
     print("""
-Usage : vt3d WebServer [options]
+Usage : vt3d AtlasBrowser LaunchAtlas [options]
 
 Options:
-            -p [port, default 8050]
+            -p [port, default 80]
 Example:
         > vt3d WebServer 
         
