@@ -71,7 +71,7 @@ class Plane:
 
     def project_coord(self,df,distance):
         corrds = df[['x','y','z']].to_numpy()
-        corrds = corrds + (np.tile(self.n,(len(distance),1)) *((-1*distance)[:,None])  )
+        corrds = corrds + (np.tile(self.n,(len(distance),1)) *( (-1*distance)[:,None]))
         df['x'] = corrds[:,0]
         df['y'] = corrds[:,1]
         df['z'] = corrds[:,2]
@@ -87,7 +87,7 @@ def project2D(df):
 
 def project2DBy(df,pca):
     X = df[['x','y','z']].to_numpy()
-    X2 = pca.fit_transform(X)
+    X2 = pca.transform(X)
     df['2d_x'] = X2[:,0] 
     df['2d_y'] = X2[:,1]
     return df
@@ -159,7 +159,7 @@ def anyslice_main(argv:[]):
     dist = plane.distance(xyzc)
     xyzc['dist'] = dist
     xyzc['abs_dis'] = np.abs(dist)
-    print(thickness/2,flush=True)
+    #print(thickness/2,flush=True)
     if num_of_slices == 1 :
         xyzc = xyzc[xyzc['abs_dis'] <= (thickness/2)].copy()
         #project 2D
@@ -175,6 +175,7 @@ def anyslice_main(argv:[]):
             slice_keys.append(i)
             slice_keys.append(i*-1)
         ret_xyzc = []
+        ret_sids = []
         curr_key_id=0
         for i in range(num_of_slices):
             while curr_key_id < len(slice_keys):
@@ -197,9 +198,14 @@ def anyslice_main(argv:[]):
                 new_xyzc['vsid'] = [curr_key]*len(new_xyzc)
                 print(f"sid: {curr_key} from [{curr_dist_from}, {curr_dist_to}) with #cell {len(new_xyzc)}",flush=True)
                 ret_xyzc.append(new_xyzc)
+                ret_sids.append(curr_key)
                 curr_key_id = curr_key_id + 1
                 break
-        all_new_xyzc = pd.concat(ret_xyzc,ignore_index=True)
+        sorted_idx = np.argsort(np.array(ret_sids))
+        ret_xyzc1 = []
+        for i in sorted_idx:
+            ret_xyzc1.append(ret_xyzc[i])
+        all_new_xyzc = pd.concat(ret_xyzc1,ignore_index=True)
         out_h5ad = inh5ad.extract_and_assign2D(all_new_xyzc['cell'].to_numpy(),all_new_xyzc[['2d_x','2d_y']].to_numpy())
         out_h5ad.obs['vsid'] = all_new_xyzc['vsid'].to_numpy()
         out_h5ad.write(f'{prefix}.h5ad', compression="gzip")

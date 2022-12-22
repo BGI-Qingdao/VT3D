@@ -26,6 +26,8 @@ def Auxiliary_main(argv:[]):
     elif argv[0] == "Draw2D" :
         exit(0)
     elif argv[0] == "DrawSlices" :
+        from vt3d_tools.draw2d_sliced import draw2D_sliced_main
+        draw2D_sliced_main(argv[1:])
         exit(0)
     else:
         Auxiliary_usage()

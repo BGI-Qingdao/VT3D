@@ -7,6 +7,17 @@ class H5ADWrapper:
     def __init__(self,h5ad_filename):
         self.data = ad.read_h5ad(h5ad_filename)
 
+    def getXY(self,key):
+        xy = self.data.obsm[key]
+        df = pd.DataFrame(data=xy,columns=['x','y'],)
+        return df
+    def getOBS(self,key):
+        return self.data.obs[key].to_numpy()
+
+    def getGene(self,genename):
+        genedata = self.data[:,genename]
+        exp = genedata.X.toarray()
+        return exp
     #######################################################
     # get xyzv
     ######################################################
