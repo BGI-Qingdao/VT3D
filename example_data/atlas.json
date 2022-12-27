@@ -1,6 +1,6 @@
 {
-    "Coordinate" : "coord3D",
-    "Annotatinos" : [ "lineage" ],
+    "Coordinate" : "spatial3D",
+    "Annotatinos" : [ "annotation" ],
     "Meshes" : {
         "body" : "example_data/body.obj" ,
         "gut" : "example_data/gut.obj"     ,

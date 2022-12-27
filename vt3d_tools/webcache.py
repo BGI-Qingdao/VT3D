@@ -32,7 +32,7 @@ def savedata2json(data,filename):
 #
 def webcache_usage():
     print("""
-Usage : vt3d WebCache [options]
+Usage : vt3d AtlasBrowser BuildAtlas [options]
 
 Options:
        required options:
@@ -40,10 +40,10 @@ Options:
             -c <conf.json>
             -o [output prefix, default webcace]
 Example:
-        > vt3d WebCache -i in.h5ad -c atlas.json
+        > vt3d AtlasBrowser BuildAtlas -i in.h5ad -c atlas.json
         > cat atlas.json
         {
-            "Coordinate" : "coord3D",
+            "Coordinate" : "spatial3D",
             "Annotatinos" : [ "lineage" ],
             "Meshes" : {
                 "body" : "example_data/body.obj" ,

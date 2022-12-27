@@ -1,21 +1,32 @@
 #!/usr/bin/env python3
-
 import os.path
 import sys
+import json
 import getopt
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from skimage import io as skio
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
+from vt3d_tools.panel_wrapper import Plane
+from sklearn.decomposition import PCA
+coord_key = 'spatial3D'
 
-
-coord_key = 'coord3D'
+def project3D(df,dist):
+    X = df[['x','y','z']].to_numpy()
+    pca = PCA(n_components=2)
+    X2 = pca.fit_transform(X)
+    df['new_x'] = X2[:,0]
+    df['new_y'] = X2[:,1]
+    df['new_z'] = dist
+    return df
 
 #################################################
 # BinConf
 # 
 class BinConf:
-    def __init__(self,view,binsize,scalebar,borderbinsize):
+    def __init__(self,view,binsize,borderbinsize):
         self.gene_binsize = binsize
         if binsize < borderbinsize :
             self.body_binsize = borderbinsize 
@@ -23,9 +34,7 @@ class BinConf:
         else :
             self.body_binsize = binsize
             self.body_scale = 1
-        self.Scalebar_H = int(scalebar / binsize)
-        self.Scalebar_W = self.Scalebar_H // 5 
-        self.Scalebar_S = 3 
+
     def geneBinsize(self):
         return self.gene_binsize
 
@@ -299,8 +308,6 @@ def GetBackground(view,body_info,binconf,drawborder):
             xids,yids = body_info.getAPML_border()
             # draw background
             draw_array[yids,xids,:] = 255
-        # draw scale bar
-        #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
         return draw_array
     elif view == "APDV" :
         body_info.calcAPDV_border()
@@ -310,12 +317,7 @@ def GetBackground(view,body_info,binconf,drawborder):
             xids,yids = body_info.getAPDV_border()
             # draw background
             draw_array[yids,xids,:] = 255
-            # draw scale bar
-        #draw_array[[H-10,H-9,H-8],W-15:W-5,:]=255
-        #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
-        #draw_array[H-20:H-10,W-15:W-12,:]=255
         return draw_array
-        #return None
     elif view == "MLDV" :
         body_info.calcMLDV_border()
         W,H = body_info.getMLDV_WH()
@@ -324,11 +326,6 @@ def GetBackground(view,body_info,binconf,drawborder):
             xids,yids = body_info.getMLDV_border()
             # draw background
             draw_array[yids,xids,:] = 255
-        # draw scale bar
-        #draw_array[[H-10,H-9,H-8],W-15:W-5,:]=255
-        #draw_array[H-20:H-10,W-15:W-12,:]=255
-        #draw_array[H-binconf.Scalebar_H-binconf.Scalebar_S : H-binconf.Scalebar_S,W-binconf.Scalebar_W-binconf.Scalebar_S:W-binconf.Scalebar_S,:]=255
-        #draw_array[H-20:H-10,W-15:W-12,:]=255
         return draw_array
 
 def GetGeneExpr(inh5,genes,binconf,roi):
@@ -340,7 +337,6 @@ def FISH_scale(num_points, panel_expr):
     from sklearn.preprocessing import QuantileTransformer
     min_value = np.min(panel_expr)
     max_value = np.percentile(panel_expr,95)
-    #print(f'min = {min_value}; max={max_value}',flush=True)
     num_light_panel=len(panel_expr)
     temp_list = np.zeros(num_points)
     temp_list[0:num_light_panel]=panel_expr
@@ -353,8 +349,75 @@ def FISH_scale(num_points, panel_expr):
     ret_data [ ret_data >255 ] = 255
     ret_data = ret_data.astype(int)
     return ret_data
-    
-def DrawSingleFISH_APML( body_info, expr, colors):
+
+def drawRdBu(x,y,e,prefix,W,H,symbolsize):
+    tmp = pd.DataFrame()
+    tmp['x'] = x
+    tmp['y'] = y
+    tmp['exp'] = e
+    tmp = tmp.sort_values(by=['exp'])
+    sns.scatterplot(data=tmp,x='x',y='y',hue='exp',palette="RdYlBu_r",s=symbolsize, edgecolors='none',linewidths=0)
+    plt.xlabel('project_x')
+    plt.ylabel('project_y')
+    plt.xlim(0,W)
+    plt.ylim(0,H)
+    plt.legend(bbox_to_anchor=(1.02, 0.8), loc='upper left', borderaxespad=0)
+    plt.tight_layout()
+    plt.savefig(f'{prefix}.pdf',dpi=72)
+    plt.close()
+
+def DrawAPDV_RdBu(body_info, expr,prefix,symbolsize):
+    W,H = body_info.getAPDV_WH()
+    APDV_expr = expr.getMIR_APDV()
+    APDV_expr['x'] = APDV_expr['x']
+    APDV_expr['z'] = APDV_expr['z']
+    drawRdBu(APDV_expr['x'],APDV_expr['z'],APDV_expr['value'],f'{prefix}.raw',W,H,symbolsize)
+    draw_expr = FISH_scale(body_info.getAPDV_num_points(),APDV_expr['value'])
+    draw_expr = draw_expr.astype(float)
+    draw_expr = draw_expr / 255.0
+    drawRdBu(APDV_expr['x'],APDV_expr['z'],draw_expr,prefix,W,H,symbolsize)
+    ret = pd.DataFrame()
+    ret['x'] = APDV_expr['x'].to_numpy()
+    ret['y'] = APDV_expr['z'].to_numpy()
+    ret['MEP'] = APDV_expr['value'].to_numpy()
+    ret['eMEP'] = draw_expr
+    ret.to_csv(f'{prefix}.result.csv',sep='\t',header=True,index=False)
+
+def DrawMLDV_RdBu(body_info, expr,prefix,symbolsize):
+    W,H = body_info.getMLDV_WH()
+    MLDV_expr = expr.getMIR_MLDV()
+    MLDV_expr['y'] = MLDV_expr['y']
+    MLDV_expr['z'] = MLDV_expr['z']
+    drawRdBu(MLDV_expr['y'],MLDV_expr['z'],MLDV_expr['value'],f'{prefix}.raw',W,H,symbolsize)
+    draw_expr = FISH_scale(body_info.getMLDV_num_points(),MLDV_expr['value'])
+    draw_expr = draw_expr.astype(float)
+    draw_expr = draw_expr / 255.0
+    drawRdBu(MLDV_expr['y'],MLDV_expr['z'],draw_expr,prefix,W,H,symbolsize)
+    ret = pd.DataFrame()
+    ret['x'] = MLDV_expr['y'].to_numpy()
+    ret['y'] = MLDV_expr['z'].to_numpy()
+    ret['MEP'] = MLDV_expr['value'].to_numpy()
+    ret['eMEP'] = draw_expr
+    ret.to_csv(f'{prefix}.result.csv',sep='\t',header=True,index=False)
+
+def DrawAPML_RdBu(body_info, expr,prefix,symsize):
+    W,H = body_info.getAPML_WH()
+    APML_expr = expr.getMIR_APML()
+    APML_expr['y'] = APML_expr['y']#//+body_info.bin_draw_scale 
+    APML_expr['x'] = APML_expr['x']#//+body_info.bin_draw_scale 
+    drawRdBu(APML_expr['x'],APML_expr['y'],APML_expr['value'],f'{prefix}.raw',W,H,symsize)
+    draw_expr =  FISH_scale(body_info.getAPML_num_points(),APML_expr['value'])
+    draw_expr = draw_expr.astype(float)
+    draw_expr = draw_expr / 255.0
+    drawRdBu(APML_expr['x'],APML_expr['y'],draw_expr,prefix,W,H,symsize)
+    ret = pd.DataFrame()
+    ret['x'] = APML_expr['x'].to_numpy()
+    ret['y'] = APML_expr['y'].to_numpy()
+    ret['MEP'] = APML_expr['value'].to_numpy()
+    ret['eMEP'] = draw_expr
+    ret.to_csv(f'{prefix}.result.csv',sep='\t',header=True,index=False)
+
+def DrawSingleFISH_APML( body_info, expr, colors,prefix ):
     W,H = body_info.getAPML_WH()
     draw_array = np.zeros((H,W,3),dtype='uint8')
     APML_expr = expr.getMIR_APML()
@@ -369,9 +432,9 @@ def DrawSingleFISH_APML( body_info, expr, colors):
     draw_array[APML_expr['y'],APML_expr['x'],0] = r_channel.astype(int) 
     draw_array[APML_expr['y'],APML_expr['x'],1] = g_channel.astype(int)
     draw_array[APML_expr['y'],APML_expr['x'],2] = b_channel.astype(int)
-    return draw_array 
+    return draw_array
 
-def DrawSingleFISH_APDV(body_info, expr, colors):
+def DrawSingleFISH_APDV(body_info, expr, colors, prefix):
     W,H = body_info.getAPDV_WH()
     draw_array = np.zeros((H,W,3),dtype='uint8')
     APDV_expr = expr.getMIR_APDV()
@@ -388,7 +451,7 @@ def DrawSingleFISH_APDV(body_info, expr, colors):
     draw_array[APDV_expr['z'],APDV_expr['x'],2] = b_channel.astype(int)
     return draw_array 
 
-def DrawSingleFISH_DVML(body_info, expr, colors):
+def DrawSingleFISH_DVML(body_info, expr, colors, prefix):
     W,H = body_info.getMLDV_WH()
     draw_array = np.zeros((H,W,3),dtype='uint8')
     MLDV_expr = expr.getMIR_MLDV()
@@ -405,39 +468,44 @@ def DrawSingleFISH_DVML(body_info, expr, colors):
     draw_array[MLDV_expr['y'],MLDV_expr['z'],2] = b_channel.astype(int)
     return draw_array 
 
-def DrawSingleFISH(view, body_info, gene_expr, color):
+def DrawSingleFISH(view, body_info, gene_expr, color,prefix):
     if view == "APML" :
-        return DrawSingleFISH_APML(body_info, gene_expr, color)
+        return DrawSingleFISH_APML(body_info, gene_expr, color,prefix)
     elif view == "APDV":
-        return DrawSingleFISH_APDV(body_info, gene_expr, color)
+        return DrawSingleFISH_APDV(body_info, gene_expr, color,prefix)
     elif view == "MLDV":
-        return DrawSingleFISH_DVML(body_info, gene_expr, color)
+        return DrawSingleFISH_DVML(body_info, gene_expr, color,prefix)
+
+def DrawSingleRdBu(view,body_info, expr,prefix,symsize):
+    if view == "APML" :
+        return DrawAPML_RdBu(body_info, expr,prefix,symsize)
+    elif view == "APDV":
+        return DrawAPDV_RdBu(body_info, expr,prefix,symsize)
+    elif view == "MLDV":
+        return DrawMLDV_RdBu(body_info, expr,prefix,symsize)
 
 ############################################################################
 # common codes for one channel
 #
 class OneChannelData:
-    def __init__(self,gene_list, channel_color):
+    def __init__(self,gene_list, channel_color, channel_name ):
         if len(gene_list) == 0 :
             self.valid = False
             return
         self.valid = True
         self.genes= gene_list
         self.colors = channel_color
+        self.channel_name = channel_name
 
     def PrepareData(self,inh5, binconf,roi):
         if self.valid:
             self.gene_expr = GetGeneExpr(inh5,self.genes,binconf,roi) 
             if self.gene_expr.valid == False:
                 self.valid = False
-            #else:
-            #    print(self.files)
-            #    print(self.colors)
-            #    print('-------------',flush=True)
 
-    def GetImage(self, view, body_info):
+    def GetImage(self, view, body_info, prefix):
         if self.valid:
-            return DrawSingleFISH(view,body_info,self.gene_expr,self.colors)
+            return DrawSingleFISH(view,body_info,self.gene_expr,self.colors,prefix)
         else:
             return None
 
@@ -453,24 +521,30 @@ Options:
             -i <input.h5ad>
             -o <output prefix>
 
-       atleast one options:
+       RdRlBu_r mode  
+            --gene geneid
+            [notice: enable --gene will override all pseudoFISH mode parameters]
+
+       pseudoFISH mode
             -r [geneid that draw in Red(#ff0000) channel]
             -g [geneid that draw in Green(#00ff00) channel]
             -c [geneid that draw in Cyan(#00ffff) channel]
             -m [geneid that draw in Magenta(#ff00ff) channel]
             -y [geneid that draw in Yellow(#ffff00) channel]
-            -b [geneid that draw in Blue(#008fff) channel]
-            -p [geneid that draw in Peru(#CD853F) channel]
+            -b [geneid that draw in Blue(#0000ff) channel]
 
        optional configure options:
             --binsize [default 5]
-            --borderbinsize [default 20]
+            --spatial_key [defaut spatial3D, the keyname of coordinate array in obsm]
             --view [default APML, must be APML/APDV/MLDV]
-                   [APML -> xy panel]
-                   [APDV -> xz panel]
-                   [MLDV -> yz panel]
+                   [APML -> xy plane]
+                   [APDV -> xz plane]
+                   [MLDV -> yz plane]
+            --plane [default '', example: "[[0,0,0],[1,0,0],[1,1,0]]" ]
+                    [define any plane by three points]
+                    [notice: enable --plane will override --view]
             --drawborder [default 0, must be 1/0]
-            --spatial_key [defaut coord3D, the keyname of coordinate array in obsm]
+            --symbolsize [default 10, only used in RdYlBu_r mode]
 
        optional ROI options:
             --xmin [default None]
@@ -480,7 +554,14 @@ Options:
             --ymax [default None]
             --zmax [default None]
 Example :
-     vt3d MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD 
+     #example of RdYlBu_r mode, will generate test.png     
+     vt3d MEP -i in.h5ad -o test --gene wnt1 --view APML 
+
+     #example of pseudoFISH mode, will generate test.tif :
+     vt3d MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD --view APML
+
+     #example of RdYlBu_r mode with assigned plane
+     vt3d MEP -i in.h5ad -o test --gene wnt1 --plane '[[0,0,0],[1,0,0],[1,1,0]]'
 """)
 
 def saveimage(fname ,draw_matrix):
@@ -491,13 +572,9 @@ def saveimage(fname ,draw_matrix):
     skio.imsave(fname,new_draw_matrix)
 
 def mergeImage(base_img, new_img):
-    base_max_img = np.max(base_img,axis=2)
-    new_max_img = np.max(new_img,axis=2)
-    tmp_img = np.stack([base_max_img,new_max_img],axis=2)
-    new_index = np.argmax(tmp_img,axis=2)
-    ret_img = base_img.copy()
-    y,x = np.nonzero(new_index)
-    ret_img[y,x,:]=new_img[y,x,:]
+    ret_img = np.zeros(base_img.shape , dtype='int') 
+    ret_img = ret_img + base_img
+    ret_img = ret_img + new_img 
     return ret_img
 
 def mep_main(argv:[]):
@@ -505,35 +582,35 @@ def mep_main(argv:[]):
     # Default values
     indata = ''
     prefix = ''
+    gene = ''
     r_gene = []
     b_gene = []
     c_gene = []
-    p_gene = []
     g_gene = []
     m_gene = []
     y_gene = []
     colors = [
        [ 255, 0  , 0  ], #Red
-       [ 0  , 126, 255], #Blue -> cyan-blue
+       [ 0  , 0  , 255], #Blue 
        [ 0  , 255, 255], #Cyan
-       [ 205, 133, 63 ], #Peru
        [ 0  , 255, 0  ], #Green
        [ 255, 0  , 255], #Megenta
        [ 255, 255, 0  ], #Yellow
     ]
     view = 'APML'
+    plane=''
     xmin = ymin = zmin = None
     xmax = ymax = zmax = None
     binsize = 5
     borderbinsize = 20
-    scalebar = 200
     drawborder=0
-
+    symbolsize=10
     ###############################################################################
     # Parse the arguments
     try:
         opts, args = getopt.getopt(argv,"hi:o:m:r:g:y:b:c:p:",
-                                        ["help",
+                                        [ "help",
+                                         "gene=",
                                          "view=",
                                          "xmin=",
                                          "ymin=",
@@ -541,11 +618,12 @@ def mep_main(argv:[]):
                                          "xmax=",
                                          "ymax=",
                                          "zmax=",
+                                        "plane=",
                                       "binsize=",
+                                   "symbolsize=",
                                   "spatial_key=",
                                    "drawborder=",
-                                "borderbinsize=",
-                                     "scalebar="])
+                                    ])
     except getopt.GetoptError:
         mep_usage()
         sys.exit(2)
@@ -553,9 +631,13 @@ def mep_main(argv:[]):
         if opt in ('-h' ,'--help'):
             mep_usage()
             sys.exit(0)
-        elif opt in ("-i"):
+        elif opt == "--gene":
+            gene = arg
+        elif opt == "--plane":
+            plane = arg
+        elif opt == "-i":
             indata = arg
-        elif opt in ("-o"):
+        elif opt == "-o":
             prefix = arg
         elif opt == "-r" :
             r_gene.append(arg)
@@ -571,6 +653,8 @@ def mep_main(argv:[]):
             c_gene.append(arg)
         elif opt == "-p" :
             p_gene.append(arg)
+        elif opt == "--symbolsize":
+            symbolsize=int(arg)
         elif opt == "--drawborder":
             drawborder=int(arg)
         elif opt == "--xmin":
@@ -592,47 +676,63 @@ def mep_main(argv:[]):
             coord_key = arg
         elif opt == "--binsize":
             binsize = int(arg)
-        elif opt == "--scalebar":
-            scalebar = int(arg)
-        elif opt == "--borderbinsize":
-            borderbinsize = int(arg)
 
+    borderbinsize = binsize
     ###############################################################################
     # Sanity check
     if indata == "" or prefix == "":
         mep_usage()
         sys.exit(3)
-    roi = ROIManager(xmin,xmax,ymin,ymax,zmin,zmax)
-    binconf = BinConf(view,binsize,scalebar,borderbinsize)
-    print(f"the drawing view : {view}")
+    #print(f"the drawing view : {view}")
     ###############################################################################
     # Load the data
     inh5ad = H5ADWrapper(indata)
+    if plane != '' :
+        xmin = ymin = zmin = None
+        xmax = ymax = zmax = None
+        view = 'APML'
+        points = json.loads(plane)
+        # override spatial3D to new coordinate system now
+        plane = Plane(np.array(points[0]),np.array(points[1]),np.array(points[2]))
+        xyzc = inh5ad.getCellXYZC(coord_key,int)
+        dist = plane.distance(xyzc)
+        xyzc['dist'] = dist
+        plane.project_coord(xyzc,dist)
+        xyzc = project3D(xyzc,dist)
+        inh5ad.setXYZ(coord_key,xyzc[['new_x','new_y','new_z']].to_numpy())
+     
+    roi = ROIManager(xmin,xmax,ymin,ymax,zmin,zmax)
+    binconf = BinConf(view,binsize,borderbinsize)
     ###############################################################################
     # Load the body points 
     print('Loading body now ...',flush=True)
     body_info = GetBodyInfo(inh5ad,binconf,roi)
-
-    ###############################################################################
-    # Load the gene expr points and draw
-    target_lists = [ r_gene , b_gene, c_gene, p_gene, g_gene, m_gene, y_gene ]
-    draw_list = []
-    for i in range(len(target_lists)):
-        draw_list.append(OneChannelData(target_lists[i],colors[i]))
-
-    print('Loading expression now ...',flush=True)
-    for ocd in draw_list:
-        ocd.PrepareData(inh5ad,binconf,roi)
-    # get sample border
-    draw_image = GetBackground(view,body_info,binconf,drawborder)
-    for ocd in draw_list:
-        ocd_image = ocd.GetImage(view,body_info)
-        if ocd_image is None:
-            continue
-        draw_image = mergeImage(draw_image,ocd_image)
-        ocd_image = None
-
-    saveimage(f'{prefix}.tif',draw_image)
+    if gene == '':
+        ###############################################################################
+        # Load the gene expr points and draw
+        cnames       = [ 'red',   'blue', 'cyan','green','magenta','yellow' ]
+        target_lists = [ r_gene , b_gene, c_gene, g_gene, m_gene, y_gene ]
+        draw_list = []
+        for i in range(len(target_lists)):
+            draw_list.append(OneChannelData(target_lists[i],colors[i],cnames[i]))
+        print('Loading expression now ...',flush=True)
+        for ocd in draw_list:
+            ocd.PrepareData(inh5ad,binconf,roi)
+        # get sample border
+        draw_image = GetBackground(view,body_info,binconf,drawborder)
+        for ocd in draw_list:
+            ocd_image = ocd.GetImage(view,body_info,prefix)
+            if ocd_image is None:
+                continue
+            draw_image = mergeImage(draw_image,ocd_image)
+            ocd_image = None
+        saveimage(f'{prefix}.tif',draw_image)
+    else:
+        GetBackground(view,body_info,binconf,drawborder)
+        print('Loading expression now ...',flush=True)
+        expr = GetGeneExpr(inh5ad,[gene],binconf,roi)
+        DrawSingleRdBu(view,body_info, expr,prefix,symbolsize)
+         
     ###############################################################################
     # Done
     print('__ALL DONE__',flush=True)
