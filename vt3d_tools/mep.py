@@ -356,8 +356,7 @@ def drawRdBu(x,y,e,prefix,W,H,symbolsize):
     tmp['y'] = y
     tmp['exp'] = e
     tmp = tmp.sort_values(by=['exp'])
-
-    sns.scatterplot(data=tmp,x='x',y='y',hue='exp',palette="RdYlBu_r",s=symbolsize)
+    sns.scatterplot(data=tmp,x='x',y='y',hue='exp',palette="RdYlBu_r",s=symbolsize, edgecolors='none',linewidths=0)
     plt.xlabel('project_x')
     plt.ylabel('project_y')
     plt.xlim(0,W)
