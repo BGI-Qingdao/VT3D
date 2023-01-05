@@ -43,28 +43,69 @@ git clone https://github.com/BGI-Qingdao/VT3D.git ./VT3D
 
 ### <a name=examples>Where to download example data</a>
 
-The input data is h5ad base and save 3D corrdinate in obsm:
+#### data format requirement 
+The basic input data is h5ad base and save 3D corrdinate in obsm and Surface models must in .obj format
+![image](https://user-images.githubusercontent.com/8720584/210737884-cd33f297-3ce3-47ea-b8b2-07ee260e0c41.png)
 
-![image](https://user-images.githubusercontent.com/8720584/199381217-96741181-13ae-4b88-b4f4-817544e50eea.png)
+#### All example datasets can be downloaded from http://www.bgiocean.com/vt3d_example/
+
+Instead of the click-to-download mode from website, you also can download them by command line, for examples:
+
+```
+#--------- Developing drosophila embryos and larvae: E14-16h ----- 
+mkdir E14_E16h
+cd E14_E16h
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E14-16h_a_count_normal_stereoseq.h5ad
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E14-16h_a.tar.gz
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E14-16h.atlas.json
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/fixed.json
+cd ../
+#--------- Developing drosophila embryos and larvae: E16-18h ----- 
+mkdir E16_E18h
+cd E16_E18h
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E16-18h_a_count_normal_stereoseq.h5ad
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E16-18h_a.tar.gz
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E16-18h.atlas.json
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/fixed.json
+tar -xzf E16-18h_a.tar.gz
+cd ../
+#--------- Developing drosophila embryos and larvae: L1
+mkdir L1
+cd L1
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/L1_a_count_normal_stereoseq.h5ad
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/L1_a.tar.gz
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/L1_a.atlas.json
+wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/fixed.json
+tar -xzf L1_a.tar.gz
+cd ../
+```
+
+You can find all download commands from the [website](http://www.bgiocean.com/vt3d_example/)
 
 ### <a name=quick_atlasbrowser>How to use AtlasBroser to browse your data</a>
+
+You can find step by step tutorial to build example atlas from the [website](http://www.bgiocean.com/vt3d_example/).
+
+Here we use L1 atlas as an example:
 
 #### Generate web cache folder
 
 ```
-./vt3d WebCache -i  example_data/WT.VT3D.h5ad -c  example_data/atlas.json -o WebCache
+cd L1
+vt3d AtlasBrowser BuildAtlas -i L1_a_count_normal_stereoseq.h5ad -o L1_Atlas -c L1_a.atlas.json
+
 ```
 
 #### Start web server and browser your data now!
 
 ```
-cd WebCache
-../vt3d_visitor WebServer -p 8010
+cd L1_Atlas && vt3d AtlasBrowser LaunchAtlas -p 80
 ```
 
 now open your broswer and try ```http://127.0.0.1:8010/index.html```
 
-![image](https://user-images.githubusercontent.com/8720584/205528109-dba0565a-2e56-4486-b8bb-1a04bfa09662.png)
+![image](https://user-images.githubusercontent.com/8720584/210740473-3554fe92-4d12-493b-9cb1-c2d9986622da.png)
+
 
 ### <a name=quick_anyslicer>How to create and visulize virtual slices</a>
 
