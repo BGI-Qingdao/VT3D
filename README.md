@@ -15,7 +15,6 @@ VT3D: a versatile Visualization Toolbox for 3D spatially resolved transcriptomic
     - [How to create MEP images](#quick_mep)
     - [How to create surface models from omics data](#quick_models)
 - [Frequent Q & A](#q_a)
-- [Reference](#ref)
 - [Contact us](#contact)
 - [Detailed usages](#usages)
 
@@ -42,7 +41,7 @@ git clone https://github.com/BGI-Qingdao/VT3D.git ./VT3D
 
 ## <a name=quick_start>Quick start</a>
 
-### <a name=example>Where to download example data</a>
+### <a name=examples>Where to download example data</a>
 
 The input data is h5ad base and save 3D corrdinate in obsm:
 
@@ -93,8 +92,6 @@ The test3d.tif (opened by ImageJ 3DViewer)  :
 ![image](https://user-images.githubusercontent.com/8720584/199373130-87fa5d7f-f07e-43e6-a402-a5e9176bbc64.png)
 
 ## <a name=q_a>Frequent Q & A</a>
-
-## <a name=ref>Reference</a>
 
 ## <a name=contact>Contact us</a>
 
