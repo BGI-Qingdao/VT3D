@@ -52,14 +52,6 @@ The basic input data is h5ad base and save 3D corrdinate in obsm and Surface mod
 Instead of the click-to-download mode from website, you also can download them by command line, for examples:
 
 ```
-#--------- Developing drosophila embryos and larvae: E14-16h ----- 
-mkdir E14_E16h
-cd E14_E16h
-wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E14-16h_a_count_normal_stereoseq.h5ad
-wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E14-16h_a.tar.gz
-wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/E14-16h.atlas.json
-wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/fixed.json
-cd ../
 #--------- Developing drosophila embryos and larvae: E16-18h ----- 
 mkdir E16_E18h
 cd E16_E18h
@@ -77,6 +69,16 @@ wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/L1_a.tar.gz
 wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/L1_a.atlas.json
 wget -c http://www.bgiocean.com/vt3d_example/download/flysta3d/fixed.json
 tar -xzf L1_a.tar.gz
+cd ../
+#--------- Hypo Preoptic hypothalamic 
+mkdir hypo_preoptic
+cd hypo_preoptic
+wget -c http://www.bgiocean.com/vt3d_example/download/merfish/hypo_preoptic.h5ad
+wget -c http://www.bgiocean.com/vt3d_example/download/merfish/mesh.tar.gz
+wget -c http://www.bgiocean.com/vt3d_example/download/merfish/hypo_preoptic.atlas.json
+wget -c http://www.bgiocean.com/vt3d_example/download/merfish/hypo_preoptic.coord.json
+wget -c http://www.bgiocean.com/vt3d_example/download/merfish/hypo_preoptic.organ.json
+tar -xzf mesh.tar.gz
 cd ../
 ```
 
@@ -113,11 +115,12 @@ we use the E16-18h dataset as exmaple:
 
 #### create one virtual slice 
 ```
-cd L1 
+cd E16_E18h 
 vt3d AnySlice -i E16-18h_a_count_normal_stereoseq.h5ad  -o test --spatial_key spatial  --p0 '25,0,10', --p1 '50,30,0' --p2 '5,30,0' --thickness 1
 ```
 #### or create five continuous virtual slice 
 ```
+cd E16_E18h 
 vt3d AnySlice -i E16-18h_a_count_normal_stereoseq.h5ad  -o test_s5 --spatial_key spatial  --p0 '25,0,10', --p1 '50,30,0' --p2 '5,30,0' --thickness 1 --slice_num 5
 ```
 #### visualize virtual slice by annotation
@@ -139,14 +142,30 @@ vt3d  Auxiliary DrawSlices -i test_s5.h5ad -o drawgn --color_by Acbp2
 ![image](https://user-images.githubusercontent.com/8720584/210743105-2a954054-51df-4b3a-9a30-b2436cfefa3d.png)
 
 ### <a name=quick_mep>How to create MEP images</a>
-
+#### create  MEP image
 ```
-
+cd hypo_preoptic
+vt3d MEP  -i hypo_preoptic.h5ad --gene Baiap2 -o Baiap2
 ```
-The output gut.SMED30007704.tif (opened by any image tool is OK) :
+![image](https://user-images.githubusercontent.com/8720584/210746260-3b3fa2ba-9a3d-4579-b203-9420047367e3.png)
+
+
+#### create MEP image and enhanced MEP image at pseudoFISH mode
+```
+cd hypo_preoptic
+vt3d MEP  -i hypo_preoptic.h5ad -m Baiap2 -o Baiap2 
+```
+![image](https://user-images.githubusercontent.com/8720584/210746047-17b7f709-ec8d-4440-a942-a22866f3f449.png)
+
+#### how create MEP image and enhanced MEP image at any angle ?
+first of all, the default view is APML (xy plane), we can switch to other view use ```--view=MLDV``` (yz plane)  or  ```--view=APDV``` (xz plane)
+
+to get project to non-axis plane, use ```--view=[[0,0,0],[1,0,0],[1,1,0]]``` , the three point define your plane
 
 
 ### <a name=quick_models>How to create surface models from omics data</a>
+![fa00f9efe371da658bd59e3ca0c78be](https://user-images.githubusercontent.com/8720584/210744364-af476dbb-9f49-4be4-ac9e-c7ffc3435bc7.png)
+
 
 ```
 ./vt3d GrayScaleTif -i  example_data/WT.VT3D.h5ad  -o test3d -c example_data/organ.json
