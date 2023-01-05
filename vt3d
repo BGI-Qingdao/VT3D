@@ -43,11 +43,11 @@ if __name__ == "__main__":
         anyslice_main(sys.argv[2:])
         exit(0)
     elif sys.argv[1] == "Auxiliary" :
-        from auxiliary import Auxiliary_main 
+        from vt3d_tools.auxiliary import Auxiliary_main 
         Auxiliary_main(sys.argv[2:])
         exit(0)
     elif sys.argv[1] == "AtlasBrowser" :
-        from atlas_browser import AtlasBrowser_main
+        from vt3d_tools.atlas_browser import AtlasBrowser_main
         AtlasBrowser_main(sys.argv[2:])
     else:
         main_usage()

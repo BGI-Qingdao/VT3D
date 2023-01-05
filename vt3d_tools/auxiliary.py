@@ -3,9 +3,8 @@ import getopt
 def Auxiliary_usage():
     print("""
     vt3d Auxiliary subaction:
-          GrayScaleTIF	Generate 3D TIFF gray scale image as input of Slicer3D.
-          Draw2D        Draw 2D images (png/pdf/html)
-          DrawSlices 	Draw 2D images (png/pdf/html) groupby slice_id
+          GrayScaleTIF          Generate 3D TIFF gray scale image as input of Slicer3D.
+          DrawVitrualSlices     Draw 2D images groupby vitrual slice
          """)
 
 
@@ -14,8 +13,7 @@ def Auxiliary_main(argv:[]):
         Auxiliary_usage()
         exit(0)
     elif len(argv) < 1 or not argv[0] in ( "GrayScaleTIF",
-                                           "Draw2D",
-                                           "DrawSlices",
+                                           "DrawVitrualSlices",
                                                    ):
         Auxiliary_usage()
         exit(1)
@@ -23,9 +21,7 @@ def Auxiliary_main(argv:[]):
         from vt3d_tools.grayscaletif import grayscaletif_main
         grayscaletif_main(argv[1:])
         exit(0)
-    elif argv[0] == "Draw2D" :
-        exit(0)
-    elif argv[0] == "DrawSlices" :
+    elif argv[0] == "DrawVitrualSlices" :
         from vt3d_tools.draw2d_sliced import draw2D_sliced_main
         draw2D_sliced_main(argv[1:])
         exit(0)

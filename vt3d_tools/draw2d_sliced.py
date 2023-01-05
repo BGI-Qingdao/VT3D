@@ -45,7 +45,7 @@ def draw2DGene(xys, genename, gene, prefix,pt):
 
 def draw2D_sliced_usage():
     print("""
-      vt3d Auxiliary DrawSlices [options]
+      vt3d Auxiliary DrawVitrualSlices [options]
             -i                  input h5ad
             -o                  output prefix
             --color_by          gene name or annotation keywork
