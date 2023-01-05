@@ -1,10 +1,27 @@
 # VT3D
-VT3D: a versatile Visualization Toolbox for 3D spatial transcriptomics atlas
+VT3D: a versatile Visualization Toolbox for 3D spatially resolved transcriptomic atlas
 
 ![image](https://user-images.githubusercontent.com/8720584/199003210-983dd4b5-01e8-4668-b9ee-36a006f49b77.png)
 
+## <a name=contents>Table of Contents</a>
 
-## Dependences
+- [Installation](#install)
+    - [Dependences](#dependences)
+    - [Download](#download)
+- [Quick start](#quick_start)
+    - [Where to download example data](#examples)
+    - [How to use AtlasBroser to browse your data](#quick_atlasbrowser)
+    - [How to create and visulize virtual slices](#quick_anyslicer)
+    - [How to create MEP images](#quick_mep)
+    - [How to create surface models from omics data](#quick_models)
+- [Frequent Q & A](#q_a)
+- [Reference](#ref)
+- [Contact us](#contact)
+- [Detailed usages](#usages)
+
+## <a name=install>Installation</a>
+
+### <a name=dependences>Dependences</a>
 
 A python3 environment with below packages:
 
@@ -14,29 +31,24 @@ A python3 environment with below packages:
 * skimage
 * sklearn
 * anndata
+* matplotlib
+* seaborn
 
-## Dowload
+### <a name=download>Dowload</a>
 
 ```
 git clone https://github.com/BGI-Qingdao/VT3D.git ./VT3D
 ```
 
-## Quick introduction of vt3d with test data
+## <a name=quick_start>Quick start</a>
 
-* enter VT3D folder
-``` cd ./VT3D/```
-* prepare the test data
-```
-cd ./example_data
-gzip -dc WT.VT3D.h5ad.gz >WT.VT3D.h5ad
-cd ../
-```
+### <a name=example>Where to download example data</a>
 
 The input data is h5ad base and save 3D corrdinate in obsm:
 
 ![image](https://user-images.githubusercontent.com/8720584/199381217-96741181-13ae-4b88-b4f4-817544e50eea.png)
 
-### Browser your data in two step
+### <a name=quick_atlasbrowser>How to use AtlasBroser to browse your data</a>
 
 #### Generate web cache folder
 
@@ -55,9 +67,13 @@ now open your broswer and try ```http://127.0.0.1:8010/index.html```
 
 ![image](https://user-images.githubusercontent.com/8720584/205528109-dba0565a-2e56-4486-b8bb-1a04bfa09662.png)
 
+### <a name=quick_anyslicer>How to create and visulize virtual slices</a>
 
+```
+./vt3d AnySlice -i example_data/WT.VT3D.h5ad -o test --p0 '0,0,200' --p1 '1,0,200' --p2 '1,1,200'
+```
 
-### Generate MEP image
+### <a name=quick_mep>How to create MEP images</a>
 
 ```
 ./vt3d MEP -i example_data/WT.VT3D.h5ad -o gut.SMED30007704 -g SMED30007704
@@ -66,14 +82,7 @@ The output gut.SMED30007704.tif (opened by any image tool is OK) :
 
 ![image](https://user-images.githubusercontent.com/8720584/199372843-7fafc175-e8fa-4806-966b-9beaef7201f4.png)
 
-
-### AnySlice
-
-```
-./vt3d AnySlice -i example_data/WT.VT3D.h5ad -o test --p0 '0,0,200' --p1 '1,0,200' --p2 '1,1,200'
-```
-
-### Generate grayscale 3D tiff
+### <a name=quick_models>How to create surface models from omics data</a>
 
 ```
 ./vt3d GrayScaleTif -i  example_data/WT.VT3D.h5ad  -o test3d -c example_data/organ.json
@@ -83,10 +92,13 @@ The test3d.tif (opened by ImageJ 3DViewer)  :
 
 ![image](https://user-images.githubusercontent.com/8720584/199373130-87fa5d7f-f07e-43e6-a402-a5e9176bbc64.png)
 
+## <a name=q_a>Frequent Q & A</a>
 
+## <a name=ref>Reference</a>
 
+## <a name=contact>Contact us</a>
 
-## Full usage of vt3d_visitor
+## <a name=usages>Detailed usages</a>
 
 ### the entry usage of vt3d_visitor
 ```
