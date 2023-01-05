@@ -102,25 +102,49 @@ vt3d AtlasBrowser BuildAtlas -i L1_a_count_normal_stereoseq.h5ad -o L1_Atlas -c 
 cd L1_Atlas && vt3d AtlasBrowser LaunchAtlas -p 80
 ```
 
-now open your broswer and try ```http://127.0.0.1:8010/index.html```
+now open your web broswer and try ```http://127.0.0.1/index.html```
 
 ![image](https://user-images.githubusercontent.com/8720584/210740473-3554fe92-4d12-493b-9cb1-c2d9986622da.png)
 
 
 ### <a name=quick_anyslicer>How to create and visulize virtual slices</a>
 
+we use the E16-18h dataset as exmaple:
+
+#### create one virtual slice 
 ```
-./vt3d AnySlice -i example_data/WT.VT3D.h5ad -o test --p0 '0,0,200' --p1 '1,0,200' --p2 '1,1,200'
+cd L1 
+vt3d AnySlice -i E16-18h_a_count_normal_stereoseq.h5ad  -o test --spatial_key spatial  --p0 '25,0,10', --p1 '50,30,0' --p2 '5,30,0' --thickness 1
 ```
+#### or create five continuous virtual slice 
+```
+vt3d AnySlice -i E16-18h_a_count_normal_stereoseq.h5ad  -o test_s5 --spatial_key spatial  --p0 '25,0,10', --p1 '50,30,0' --p2 '5,30,0' --thickness 1 --slice_num 5
+```
+#### visualize virtual slice by annotation
+```
+vt3d  Auxiliary DrawSlices -i test_s5.h5ad -o drawan --color_by annotation
+```
+![image](https://user-images.githubusercontent.com/8720584/210742577-5b445440-94f5-4eb0-bf22-4b8a422c0d96.png)
+
+#### visualize virtual slice by raw slice id ( another column from obs dataframe )
+```
+vt3d  Auxiliary DrawSlices -i test_s5.h5ad -o drawrs --color_by slice_ID
+```
+![image](https://user-images.githubusercontent.com/8720584/210742982-0eb4fbb9-ec69-4e20-95ce-b4fe167f17c8.png)
+
+#### visualize virtual slice by gene expression
+```
+vt3d  Auxiliary DrawSlices -i test_s5.h5ad -o drawgn --color_by Acbp2
+```
+![image](https://user-images.githubusercontent.com/8720584/210743105-2a954054-51df-4b3a-9a30-b2436cfefa3d.png)
 
 ### <a name=quick_mep>How to create MEP images</a>
 
 ```
-./vt3d MEP -i example_data/WT.VT3D.h5ad -o gut.SMED30007704 -g SMED30007704
+
 ```
 The output gut.SMED30007704.tif (opened by any image tool is OK) :
 
-![image](https://user-images.githubusercontent.com/8720584/199372843-7fafc175-e8fa-4806-966b-9beaef7201f4.png)
 
 ### <a name=quick_models>How to create surface models from omics data</a>
 
@@ -130,7 +154,6 @@ The output gut.SMED30007704.tif (opened by any image tool is OK) :
 
 The test3d.tif (opened by ImageJ 3DViewer)  :
 
-![image](https://user-images.githubusercontent.com/8720584/199373130-87fa5d7f-f07e-43e6-a402-a5e9176bbc64.png)
 
 ## <a name=q_a>Frequent Q & A</a>
 
