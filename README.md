@@ -239,7 +239,7 @@ May be you can find them from our atlas browser.
 ## <a name=contact>Contact us</a>
 
 1. Raise an issue is always good way for questions
-2. Email us if your need : guolidong@genomics.cn;liyao1.genomics.cn;xumengyang@genomics.cn
+2. Email us if your need : guolidong@genomics.cn;liyao1@genomics.cn;xumengyang@genomics.cn
 
 ## <a name=usages>Detailed usages</a>
 
@@ -409,4 +409,54 @@ Example:
 
         ...
         never stop until you press Ctrl-C
+```
+
+### Detail usage of Auxiliary
+```
+  vt3d Auxiliary subaction:
+          GrayScaleTIF          Generate 3D TIFF gray scale image as input of Slicer3D.
+          DrawVitrualSlices     Draw 2D images groupby vitrual slice
+```
+####  Detail usage of Auxiliary - GrayScaleTIF
+```
+Usage : vt3d Auxiliary GrayScaleTIF [options]
+
+Options:
+       required options:
+            -i <input.h5ad>
+            -o <output prefix>
+            -c <conf.json>
+            --spatial_key [default 'spatial3D', the keyname of coordinate array in obsm]
+Example:
+        > vt3d Auxiliary GrayScaleTIF -i in.h5ad -o test -c organ.json
+        > cat organ.json
+        {
+            "binsize" : 10,
+            "margin" : 10,
+            "keyname" : "annotation",
+            "targets": [
+                "all",
+                "Gut",
+                "Pharynx"
+                "Neural",
+            ],
+            "grayvalue": [
+                50,
+                100,
+                150,
+                200
+            ]
+        }
+```
+####  Detail usage of Auxiliary - DrawVitrualSlices
+
+```
+    vt3d Auxiliary DrawVitrualSlices [options]
+            -i                  input h5ad
+            -o                  output prefix
+            --color_by          gene name or annotation keywork
+            --vsid_key          [default vsid, key of virtual slice id]
+            --coord2D           [default spatial2D, keyname in obsm]
+            -t                  [default pdf, output type (png or pdf)]
+            -h/--help           display this usage and exit
 ```
