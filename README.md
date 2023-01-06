@@ -243,7 +243,7 @@ May be you can find them from our atlas browser.
 
 ## <a name=usages>Detailed usages</a>
 
-### the entry usage of vt3d_visitor
+### the entry usage of vt3d
 ```
 > vt3d -h
 Usage : vt3d <action> [options ]
