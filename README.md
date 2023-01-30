@@ -171,7 +171,7 @@ vt3d MEP  -i hypo_preoptic.h5ad --gene Baiap2 -o Baiap2
 ![image](https://user-images.githubusercontent.com/8720584/210746260-3b3fa2ba-9a3d-4579-b203-9420047367e3.png)
 
 
-#### create MEP image at pseudoFISH mode
+#### create an MEP image at pseudoFISH mode
 ```
 cd hypo_preoptic
 vt3d MEP  -i hypo_preoptic.h5ad -m Baiap2 -o Baiap2 
@@ -202,7 +202,7 @@ to get project to non-axis plane, use ```--view=[[0,0,0],[1,0,0],[1,1,0]]``` , t
 cd hypo_preoptic
 vt3d Auxiliary GrayScaleTIF -i  hypo_preoptic.h5ad  -o test3d -c  hypo_preoptic.organ.json
 ```
-Note: this action will generate hypo_preoptic.coord.json
+Note: This action will generate hypo_preoptic.coord.json
 
 The test3d.tif (opened by ImageJ 3DViewer)  :
 ![image](https://user-images.githubusercontent.com/8720584/210910747-d376be6c-7434-4fcb-83d0-f97adf6fbfa0.png)
@@ -210,17 +210,17 @@ The test3d.tif (opened by ImageJ 3DViewer)  :
 
 ## <a name=q_a>Frequent Q & A</a>
 
-#### 3D coordinate not stored in spatial3D ?
+#### 3D coordinate not stored in spatial3D?
 
 Please make sure your spatial 3D coordinate stored in obsm, then use ```--spatial_key xxx``` to assign the column name
 
-#### Why we need fixed.json ?
-We use the fixed.json when the surface models is in the same coordinate system of h5ad data. 
+#### Why do we need fixed.json?
+We use fixed.json when the surface models are in the same coordinate system of h5ad data. 
 fixed.json
 ```
 {"xmin": 0, "ymin": 0,  "margin": 0, "zmin": 0, "binsize": 1}
 ```
-Sometime the surface models need to shift and scale to fit the h5ad data, for example:
+Sometimes the surface models need to shift and scale to fit the h5ad data, for example:
 hypo_preoptic.coord.json
 ```
 {"xmin": -897, "ymin": -897, "xmax": 897, "ymax": 897, "margin": 10, "zmin": -290, "zmax": 260, "binsize": 50}
@@ -232,18 +232,18 @@ the surface models coordinate will be
 2. y add -897
 3. z add -290
 
-#### How to get the three points for any plane ?
+#### How to get the three points for a user-defined plane?
 
-May be you can find them from our atlas browser.
+Perhaps you can find them from our atlas browser.
 
 ## <a name=contact>Contact us</a>
 
-1. Raise an issue is always good way for questions
-2. Email us if your need : guolidong@genomics.cn;liyao1@genomics.cn;xumengyang@genomics.cn
+1. Raising an issue is always a good way for questions
+2. Email us if you need: guolidong@genomics.cn;liyao1@genomics.cn;xumengyang@genomics.cn
 
 ## <a name=usages>Detailed usages</a>
 
-### the entry usage of vt3d
+### entry usage of vt3d
 ```
 > vt3d -h
 Usage : vt3d <action> [options ]
@@ -251,19 +251,19 @@ Usage : vt3d <action> [options ]
 Action:
           -------------------------------------------------------------------------------
           MEP                   Maximun Expression Projection. (suit 3D structure to 2D)
-          AnySlice              Extract 2D slice from any angle.
+          AnySlice              Extract a 2D slice from any angle.
           AtlasBrowser          Browser your data interactively.
           Auxiliary             More auxiliary tools
           -------------------------------------------------------------------------------
 
-Detail usage of each action:
+Detailed usage of each action:
         vt3d <action> -h
 ```
 
 ### Detail usage of MEP action
 
 ```
-Usage : vt3d MEP  [options]
+Usage: vt3d MEP  [options]
 
 Options:
        required options:
@@ -275,12 +275,12 @@ Options:
             [note: enable --gene will override all pseudoFISH mode parameters]
 
        pseudoFISH mode
-            -r [geneid that draw in Red(#ff0000) channel]
-            -g [geneid that draw in Green(#00ff00) channel]
-            -c [geneid that draw in Cyan(#00ffff) channel]
-            -m [geneid that draw in Magenta(#ff00ff) channel]
-            -y [geneid that draw in Yellow(#ffff00) channel]
-            -b [geneid that draw in Blue(#0000ff) channel]
+            -r [geneid shown in Red(#ff0000) channel]
+            -g [geneid shown in Green(#00ff00) channel]
+            -c [geneid shown in Cyan(#00ffff) channel]
+            -m [geneid shown in Magenta(#ff00ff) channel]
+            -y [geneid shown in Yellow(#ffff00) channel]
+            -b [geneid shown in Blue(#0000ff) channel]
 
        optional configure options:
             --binsize [default 5]
@@ -302,7 +302,7 @@ Options:
             --xmax [default None]
             --ymax [default None]
             --zmax [default None]
-Example :
+Example:
      #example of RdYlBu_r mode, will generate test.png
      vt3d MEP -i in.h5ad -o test --gene wnt1 --view APML
 
@@ -314,10 +314,10 @@ Example :
 
 ```
 
-### Detail usage of AnySlice
+### Detailed usage of AnySlice
 
 ```
-Usage : vt3d AnySlice [options]
+Usage: vt3d AnySlice [options]
 
 Options:
        required options:
@@ -339,18 +339,18 @@ Example:
 
 ```
 
-### Detail usage of AtlasBrowser
+### Detailed usage of AtlasBrowser
 
 ```
     vt3d AtlasBrowser subaction:
           BuildAtlas            Generate cache files for WebCache action.
-          LaunchAtlas           Start the atlas server for VT3D_Browse in WebCache folder.
+          LaunchAtlas           Start the atlas server for VT3D_Browse in the WebCache folder.
 ```
 
-####  Detail usage of AtlasBrowser - BuildAtlas
+####  Detailed usage of AtlasBrowser - BuildAtlas
 
 ```
-Usage : vt3d AtlasBrowser BuildAtlas [options]
+Usage: vt3d AtlasBrowser BuildAtlas [options]
 
 Options:
        required options:
@@ -362,11 +362,11 @@ Example:
         > cat atlas.json
         {
             "Coordinate" : "spatial3D",
-            "Annotatinos" : [ "lineage" ],
+            "Annotations" : [ "lineage" ],
             "Meshes" : {
                 "body" : "example_data/body.obj" ,
                 "gut" : "example_data/gut.obj"     ,
-                "nueral" : "example_data/neural.obj" ,
+                "neural" : "example_data/neural.obj" ,
                 "pharynx" : "example_data/pharynx.obj"
             },
             "mesh_coord" : "example_data/WT.coord.json",
@@ -382,7 +382,7 @@ Example:
 Note:
      Set "Genes" : ["all"] to export all genes in var.
 
-The structure of output atlas folder:
+The structure of the output atlas folder:
       webcache
         +---Anno
              +---lineage.json
@@ -397,10 +397,10 @@ The structure of output atlas folder:
         +---meshes.json
 ```
 
-#### Detail usage of AtlasBrowser LaunchAtlas
+#### Detailed usage of AtlasBrowser LaunchAtlas
 
 ```
-Usage : vt3d AtlasBrowser LaunchAtlas [options]
+Usage: vt3d AtlasBrowser LaunchAtlas [options]
 
 Options:
             -p [port, default 80]
@@ -411,15 +411,15 @@ Example:
         never stop until you press Ctrl-C
 ```
 
-### Detail usage of Auxiliary
+### Detailed usage of Auxiliary
 ```
   vt3d Auxiliary subaction:
-          GrayScaleTIF          Generate 3D TIFF gray scale image as input of Slicer3D.
-          DrawVitrualSlices     Draw 2D images groupby vitrual slice
+          GrayScaleTIF          Generate 3D TIFF grayscale image as input of Slicer3D.
+          DrawVitrualSlices     Draw 2D image group as virtual slices
 ```
-####  Detail usage of Auxiliary - GrayScaleTIF
+####  Detailed usage of Auxiliary - GrayScaleTIF
 ```
-Usage : vt3d Auxiliary GrayScaleTIF [options]
+Usage: vt3d Auxiliary GrayScaleTIF [options]
 
 Options:
        required options:
@@ -448,7 +448,7 @@ Example:
             ]
         }
 ```
-####  Detail usage of Auxiliary - DrawVitrualSlices
+####  Detailed usage of Auxiliary - DrawVitrualSlices
 
 ```
     vt3d Auxiliary DrawVitrualSlices [options]
