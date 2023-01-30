@@ -1,5 +1,5 @@
 # VT3D
-VT3D: a versatile Visualization Toolbox for 3D spatially resolved transcriptomic atlas
+VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic atlas
 
 ![image](https://user-images.githubusercontent.com/8720584/199003210-983dd4b5-01e8-4668-b9ee-36a006f49b77.png)
 
@@ -8,21 +8,21 @@ VT3D: a versatile Visualization Toolbox for 3D spatially resolved transcriptomic
 - [Installation](#install)
     - [Dependences](#dependences)
     - [Download](#download)
-- [Quick start](#quick_start)
+- [Quick Start](#quick_start)
     - [Where to download example data](#examples)
     - [How to use AtlasBroser to browse your data](#quick_atlasbrowser)
-    - [How to create and visulize virtual slices](#quick_anyslicer)
+    - [How to create and visualize virtual slices](#quick_anyslicer)
     - [How to create MEP images](#quick_mep)
     - [How to create surface models from omics data](#quick_models)
 - [Frequent Q & A](#q_a)
-- [Contact us](#contact)
-- [Detailed usages](#usages)
+- [Contact Us](#contact)
+- [Detailed Usages](#usages)
 
 ## <a name=install>Installation</a>
 
 ### <a name=dependences>Dependences</a>
 
-A python3 environment with below packages:
+A python3 environment with the following packages:
 
 * json
 * numpy
@@ -33,7 +33,7 @@ A python3 environment with below packages:
 * matplotlib
 * seaborn
 
-I have not tested different version of those packages, but below is the versions of my developing environment:
+Note that we have not tested different versions of those packages, but below are the versions in our developing environment:
 ```
 >>> json.__version__
 '2.0.9'
@@ -56,21 +56,21 @@ I have not tested different version of those packages, but below is the versions
 ```
 git clone https://github.com/BGI-Qingdao/VT3D.git ./VT3D
 ```
-All scripts written in Python package thus no need for any compile.
+All scripts are written in Python package thus there is no need for any compilation.
 
-This package contain compiled vt3d_browser, if your need the source codes of it, please go to https://github.com/BGI-Qingdao/VT3D_Browser 
+This package contains compiled vt3d_browser, if your need the source codes of it, please go to https://github.com/BGI-Qingdao/VT3D_Browser 
 
 ## <a name=quick_start>Quick start</a>
 
 ### <a name=examples>Where to download example data</a>
 
 #### data format requirement 
-The basic input data is h5ad base and save 3D corrdinate in obsm and Surface models must in .obj format
+The basic input data is h5ad base and save 3D coordinates in obsm and Surface models must in .obj format
 ![image](https://user-images.githubusercontent.com/8720584/210737884-cd33f297-3ce3-47ea-b8b2-07ee260e0c41.png)
 
 #### All example datasets can be downloaded from http://www.bgiocean.com/vt3d_example/
 
-Instead of the click-to-download mode from website, you also can download them by command line, for examples:
+In addition to the click-to-download mode from the website, you can also download the datasets by command line:
 
 ```
 #--------- Developing drosophila embryos and larvae: E16-18h ----- 
@@ -107,7 +107,7 @@ You can find all download commands from the [website](http://www.bgiocean.com/vt
 
 ### <a name=quick_atlasbrowser>How to use AtlasBroser to browse your data</a>
 
-You can find step by step tutorial to build example atlas from the [website](http://www.bgiocean.com/vt3d_example/).
+You can find a step-by-step tutorial for building an example atlas from the [website](http://www.bgiocean.com/vt3d_example/).
 
 Here we use L1 atlas as an example:
 
@@ -119,20 +119,20 @@ vt3d AtlasBrowser BuildAtlas -i L1_a_count_normal_stereoseq.h5ad -o L1_Atlas -c 
 
 ```
 
-#### Start web server and browser your data now!
+#### Start the web server and browse your data now!
 
 ```
 cd L1_Atlas && vt3d AtlasBrowser LaunchAtlas -p 80
 ```
 
-now open your web broswer and try ```http://127.0.0.1/index.html```
+now open your web browser and try ```http://127.0.0.1/index.html```
 
 ![image](https://user-images.githubusercontent.com/8720584/210740473-3554fe92-4d12-493b-9cb1-c2d9986622da.png)
 
 
-### <a name=quick_anyslicer>How to create and visulize virtual slices</a>
+### <a name=quick_anyslicer>How to create and visualize virtual slices</a>
 
-we use the E16-18h dataset as exmaple:
+we use the E16-18h dataset an example:
 
 #### create one virtual slice 
 ```
@@ -178,18 +178,18 @@ vt3d MEP  -i hypo_preoptic.h5ad -m Baiap2 -o Baiap2
 ```
 ![image](https://user-images.githubusercontent.com/8720584/210746047-17b7f709-ec8d-4440-a942-a22866f3f449.png)
 
-Notice: in pseudoFISH mode, you can use one of some of below fluorescence color
+Note: in pseudoFISH mode, you can use one of the below fluorescence colors
 ```
--m refer to magenta 
--g refer to green
--y refer to yellow
--c refer to cyan
--r refer to red
--b refer to blue
+-m refers to magenta 
+-g refers to green
+-y refers to yellow
+-c refers to cyan
+-r refers to red
+-b refers to blue
 ```
 
-#### how create MEP image at any angle ?
-first of all, the default view is APML (xy plane), we can switch to other view use ```--view=MLDV``` (yz plane)  or  ```--view=APDV``` (xz plane)
+#### how to create an MEP image at a user-defined angle?
+first of all, the default view is APML (xy plane), we can switch to another view using ```--view=MLDV``` (yz plane)  or  ```--view=APDV``` (xz plane)
 
 to get project to non-axis plane, use ```--view=[[0,0,0],[1,0,0],[1,1,0]]``` , the three point define your plane
 
@@ -202,7 +202,7 @@ to get project to non-axis plane, use ```--view=[[0,0,0],[1,0,0],[1,1,0]]``` , t
 cd hypo_preoptic
 vt3d Auxiliary GrayScaleTIF -i  hypo_preoptic.h5ad  -o test3d -c  hypo_preoptic.organ.json
 ```
-Notice: this action will generate hypo_preoptic.coord.json
+Note: this action will generate hypo_preoptic.coord.json
 
 The test3d.tif (opened by ImageJ 3DViewer)  :
 ![image](https://user-images.githubusercontent.com/8720584/210910747-d376be6c-7434-4fcb-83d0-f97adf6fbfa0.png)
@@ -272,7 +272,7 @@ Options:
 
        RdRlBu_r mode
             --gene geneid
-            [notice: enable --gene will override all pseudoFISH mode parameters]
+            [note: enable --gene will override all pseudoFISH mode parameters]
 
        pseudoFISH mode
             -r [geneid that draw in Red(#ff0000) channel]
@@ -291,7 +291,7 @@ Options:
                    [MLDV -> yz plane]
             --plane [default '', example: "[[0,0,0],[1,0,0],[1,1,0]]" ]
                     [define any plane by three points]
-                    [notice: enable --plane will override --view]
+                    [note: enable --plane will override --view]
             --drawborder [default 0, must be 1/0]
             --symbolsize [default 10, only used in RdYlBu_r mode]
 
@@ -379,7 +379,7 @@ Example:
             ]
         }
 
-Notice:
+Note:
      Set "Genes" : ["all"] to export all genes in var.
 
 The structure of output atlas folder:
