@@ -62,7 +62,7 @@ This package contains compiled vt3d_browser. If your need the source codes, plea
 
 ## <a name=quick_start>Quick start</a>
 
-### <a name=examples>Where to download example data</a>
+### <a name=examples>Where can I download example datasets</a>
 
 #### data format requirement 
 The basic input data is h5ad base and saves 3D coordinates in obsm. Surface models must be stored in .obj format.
@@ -105,7 +105,7 @@ cd ../
 
 You can find all download commands from [website](http://www.bgiocean.com/vt3d_example/)
 
-### <a name=quick_atlasbrowser>How to use AtlasBroser to browse your data</a>
+### <a name=quick_atlasbrowser>How can I use AtlasBroser to browse your data</a>
 
 You can find a step-by-step tutorial for building an atlas from [website](http://www.bgiocean.com/vt3d_example/).
 
@@ -130,7 +130,7 @@ now open your web browser and try ```http://127.0.0.1/index.html```
 ![image](https://user-images.githubusercontent.com/8720584/210740473-3554fe92-4d12-493b-9cb1-c2d9986622da.png)
 
 
-### <a name=quick_anyslicer>How to create and visualize virtual slices</a>
+### <a name=quick_anyslicer>How can I create and visualize virtual slices</a>
 
 we use the E16-18h dataset as an example:
 
@@ -162,7 +162,7 @@ vt3d  Auxiliary DrawSlices -i test_s5.h5ad -o drawgn --color_by Acbp2
 ```
 ![image](https://user-images.githubusercontent.com/8720584/210743105-2a954054-51df-4b3a-9a30-b2436cfefa3d.png)
 
-### <a name=quick_mep>How to create MEP images</a>
+### <a name=quick_mep>How can I create MEP images</a>
 #### create an MEP image
 ```
 cd hypo_preoptic
@@ -188,13 +188,13 @@ Note: in pseudoFISH mode, you can use one of the following fluorescence colors
 -b refers to blue
 ```
 
-#### How to create an MEP image at a user-defined angle?
+#### How can I create an MEP image at a user-defined angle?
 First of all, the default view is APML plane (xy plane). You can switch to another view plane perpendicular to coordinate axes using ```--view=MLDV``` (yz plane)  or  ```--view=APDV``` (xz plane)
 
 To get the 2D projection to an arbitrary plane defined by three non-collinear points, plesase use ```--view=[[0,0,0],[1,0,0],[1,1,0]]``` 
 
 
-### <a name=quick_models>How to create surface models from omics data</a>
+### <a name=quick_models>How can I create a surface model from omics data</a>
 ![fa00f9efe371da658bd59e3ca0c78be](https://user-images.githubusercontent.com/8720584/210744364-af476dbb-9f49-4be4-ac9e-c7ffc3435bc7.png)
 
 
