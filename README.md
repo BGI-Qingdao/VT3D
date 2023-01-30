@@ -6,7 +6,7 @@ VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic
 ## <a name=contents>Table of Contents</a>
 
 - [Installation](#install)
-    - [Dependences](#dependences)
+    - [Dependencies](#dependencies)
     - [Download](#download)
 - [Quick Start](#quick_start)
     - [Where to download example data](#examples)
@@ -20,7 +20,7 @@ VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic
 
 ## <a name=install>Installation</a>
 
-### <a name=dependences>Dependences</a>
+### <a name=dependencies>Dependencies</a>
 
 A python3 environment with the following packages:
 
