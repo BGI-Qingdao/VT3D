@@ -68,9 +68,14 @@ class OBJWrapper:
                 self.mesh_zmax = zmax
 
         faces = cache[cache['type'] == 'f'].copy()
-        faces['i'] = faces.apply(lambda row: int(row['v1'].split('/')[0])-1, axis=1)
-        faces['j'] = faces.apply(lambda row: int(row['v2'].split('/')[0])-1, axis=1)
-        faces['k'] = faces.apply(lambda row: int(row['v3'].split('/')[0])-1, axis=1)
+        if faces.dtypes['v1'] == object:
+            faces['i'] = faces.apply(lambda row: int(row['v1'].split('/')[0])-1, axis=1)
+            faces['j'] = faces.apply(lambda row: int(row['v2'].split('/')[0])-1, axis=1)
+            faces['k'] = faces.apply(lambda row: int(row['v3'].split('/')[0])-1, axis=1)
+        else:
+            faces['i'] = faces['v1'] -1
+            faces['j'] = faces['v2'] -1 
+            faces['k'] = faces['v3'] -1
         faces = faces[['i','j','k']].copy()
 
         self.data[0].append(organname)
@@ -95,3 +100,31 @@ class OBJWrapper:
         if self.mesh_zmax > ret['box']['zmax']:
            ret['box']['zmax'] = self.mesh_zmax
         return ret
+
+    def fitpca(self,pca):
+        newvects = []
+        for i in self.data[1]:
+            newvects.append(pca.transform(i))
+        self.data[1] = newvects
+
+    def toobj(self,prefix):
+        for i, name in enumerate(self.data[0]):
+            vects = np.array(self.data[1][i])#.copy()
+            faces = np.array(self.data[2][i])#.copy()
+            vs = pd.DataFrame()
+            vs['x'] = vects[:,0] 
+            vs['y'] = vects[:,1] 
+            vs['z'] = vects[:,2]
+            vs['t'] = 'v'
+        
+            fs = pd.DataFrame()
+            fs['x'] = faces[:,0] 
+            fs['x'] = fs['x']+1
+            fs['y'] = faces[:,1] 
+            fs['y'] = fs['y']+1
+            fs['z'] = faces[:,2]
+            fs['z'] = fs['z']+1
+            fs['t'] = 'f'
+            dt = pd.concat([vs,fs],ignore_index=True)
+            dt = dt[['t','x','y','z']]
+            dt.to_csv(f'{prefix}_{name}.obj',sep=' ',header=False,index=False)

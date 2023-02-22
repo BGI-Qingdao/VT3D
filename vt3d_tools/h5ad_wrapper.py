@@ -24,7 +24,7 @@ class H5ADWrapper:
     def getBodyXYZ(self,obsm_key='spatial3D',dtype=int):
         xyz = self.data.obsm[obsm_key]
         df = pd.DataFrame(data=xyz,columns=['x','y','z'])
-        df = df.astype(int)
+        df = df.astype(dtype)
         return df
 
     def setXYZ(self,obsm_key,array):

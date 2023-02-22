@@ -21,8 +21,14 @@ def create_folder(foldername):
     except FileExistsError:
         print(f'cache folder -- {foldername} already exists, reuse it now....')
 
+class int64_encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.int64):
+            return int(obj)
+        return json.JSONEncoder.default(self, obj)
+
 def savedata2json(data,filename):
-    text = json.dumps(data)
+    text = json.dumps(data,cls=int64_encoder)
     textfile = open(filename, "w")
     textfile.write(text)
     textfile.close()
@@ -169,6 +175,7 @@ def webcache_main(argv:[]):
     summary = inh5ad.getSummary(confdata['Coordinate'] ,confdata['Annotatinos'] , confdata['Genes'])
     if len(confdata['Meshes'])>1:
         summary = meshes.update_summary(summary)
+    #print(summary,flush=True)
     savedata2json(summary, f'{prefix}/summary.json')      
     savedata2json(confdata['Genes'],f'{prefix}/gene.json')
     #######################################
