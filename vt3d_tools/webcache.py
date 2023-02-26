@@ -25,6 +25,8 @@ class int64_encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.int64):
             return int(obj)
+        if isinstance(obj, np.float32):
+            return float(obj)
         return json.JSONEncoder.default(self, obj)
 
 def savedata2json(data,filename):
