@@ -25,20 +25,23 @@ VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic
 A python3 environment with the following packages is required:
 
 * json
-* numpy
+* numpy 
 * pandas
 * skimage
 * sklearn
 * anndata
 * matplotlib
 * seaborn
+* pymeshfix [optional only for PVMesh]
+* pyvista [optional only for PVMesh]
+* meshio [optional only for PVMesh]
 
 Note that we have not tested different versions of those packages yet, but below are the versions in our developing environment:
 ```
 >>> json.__version__
 '2.0.9'
 >>> numpy.__version__
-'1.19.5'
+'1.24.2'
 >>> pandas.__version__
 '1.3.4'
 >>> sklearn.__version__
