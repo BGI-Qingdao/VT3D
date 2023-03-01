@@ -48,6 +48,11 @@ class H5ADWrapper:
         df = df[df['exp']>exp_cutoff].copy()
         return df
 
+    def getGeneExp(self, genename):
+        genedata = self.data[:,genename]
+        exp = genedata.X.toarray()
+        return exp.reshape(-1)
+
     #######################################################
     # for any slice
     ######################################################
