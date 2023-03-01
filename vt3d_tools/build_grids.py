@@ -2,11 +2,13 @@
 import sys
 import json
 import getopt
+import time
 import numpy as np
 import pandas as pd
 import anndata as ad
 from sklearn.svm import SVC
 from sklearn.svm import SVR
+from scipy import sparse
 from vt3d_tools.h5ad_wrapper import H5ADWrapper
 from vt3d_tools.obj_wrapper import OBJWrapper
 #####################################################
@@ -75,47 +77,57 @@ def buildgrids_main(argv:[]):
     if infile == '' or prefix == '' or inmesh == '' or conf_json== '' :
         buildgrids_usage()
         sys.exit(0)
-
+    print(f'BuildGrids start ... ',flush=True)
     conf = json.load(open(conf_json))
     inh5ad = H5ADWrapper(infile)
     meshes = OBJWrapper()
     mesh = meshes.load_mesh(inmesh)
+    print(f'prepare grids ... ',flush=True)
     predict_xyz = mesh.grids(conf["step"])
+    print(f'prepare grids done ... ',flush=True)
     new_obs = pd.DataFrame()
-    new_obs['x'] = new_obs[:,0]
-    new_obs['y'] = new_obs[:,1]
-    new_obs['z'] = new_obs[:,2]
+    new_obs['x'] = predict_xyz[:,0]
+    new_obs['y'] = predict_xyz[:,1]
+    new_obs['z'] = predict_xyz[:,2]
     new_obs['c'] = np.arange(1,len(new_obs)+1)
     new_obs['c'] = new_obs.apply(lambda row: f'cell_{row["c"]}',axis=1)
     new_obs = new_obs.set_index('c')
-    train_xyzc = inh5ad.getBodyXYZA(conf["spatial_key"],float,conf["annotation"])
+    train_xyzc = inh5ad.getCellXYZA(conf["spatial_key"],float,conf["annotation"])
     train_xyz = train_xyzc[['x','y','z']].to_numpy()
     ###########################################
     # Train celltypes
     id_label = []
     label_id = {}
-    for i,l in enumerate(train_label.unique()):
+    for i,l in enumerate(train_xyzc['anno'].unique()):
         id_label.append(l)
         label_id[l]=i
     train_xyzc['label'] = train_xyzc.apply( lambda row: label_id[row['anno']],axis=1)
     train_id = train_xyzc['label'].to_numpy()
+
+    print(f'predict lables ... ',flush=True)
     predict_id = TrainAndPredict_CellType(train_xyz, train_id, predict_xyz)
+    print(f'predict lables done...',flush=True)
     new_obs[conf["annotation"]] = predict_id
-    new_obs[conf["annotation"]] = new_obs.apply(lambda row:id_label[row[conf["annotation"]]],axis=1)
+    new_obs[conf["annotation"]] = new_obs.apply(lambda row : id_label[int(row[conf["annotation"]])],axis=1)
     ###########################################
     # Train genes
     gene_exp = []
     for gene in conf["genes"]:
         train_exp = inh5ad.getGeneExp(gene)
+        print(f'predict gene exp for {gene} ...',flush=True)
         predict_exp = TrainAndPredict_GeneExpression(train_xyz, train_exp, predict_xyz)
+        print(f'predict gene exp for {gene} done ...',flush=True)
         gene_exp.append(predict_exp)
 
     ###########################################
     # Construct h5ad
-    matrix = np.hstack(gene_exp)
+    print(f'save data ...',flush=True)
+    matrix = np.vstack(gene_exp).T
     adata = ad.AnnData(sparse.csr_matrix(matrix),dtype='float32')
     adata.obs = new_obs
-    adata.var_names =  data.columns.to_list()
+    adata.var_names = conf["genes"]#data.columns.to_list()
     adata.obsm[conf["spatial_key"]] = new_obs[['x','y','z']].to_numpy()
     adata.write(f'{prefix}.h5ad',compression='gzip')
+    print(f'save data done ...',flush=True)
+    print(f'all done ...',flush=True)
 

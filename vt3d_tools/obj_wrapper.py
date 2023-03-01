@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import pandas as pd
-from vt3d_tools.is_inside_mesh import IsPointsInsideMesh
+#from vt3d_tools.is_inside_mesh import IsPointsInsideMesh
 class Mesh:
     def __init__(self,vs,fs):
         self.vectors = vs.to_numpy()
@@ -42,9 +42,10 @@ class Mesh:
         return np.array(tris)
 
     def grids(self,step=10):
-        xn = (self.xmax-self.xmin+1)//step
-        yn = (self.ymax-self.ymin+1)//step
-        zn = (self.zmax-self.zmin+1)//step
+        # create grids
+        xn = int((self.xmax-self.xmin+1)//step)
+        yn = int((self.ymax-self.ymin+1)//step)
+        zn = int((self.zmax-self.zmin+1)//step)
         x = np.linspace(self.xmin,self.xmax,xn)
         y = np.linspace(self.ymin,self.ymax,yn)
         z = np.linspace(self.zmin,self.zmax,zn)
@@ -53,14 +54,37 @@ class Mesh:
         ret['x'] = xv.reshape(-1)
         ret['y'] = yv.reshape(-1)
         ret['z'] = zv.reshape(-1)
-        ret = ret[IsPointsInsideMesh(self.totriangles(), ret.to_numpy())].copy()
-        return ret
+        print(f'check point in mesh {len(ret)} ',flush=True)
+        print(f'check point in mesh {ret.shape} ',flush=True)
+
+        # modify based on codes from spateo
+        from scipy.spatial import ConvexHull, Delaunay, cKDTree
+        hull = ConvexHull(self.vectors)
+        hull = hull.points[hull.vertices, :]
+        if not isinstance(hull, Delaunay):
+            hull = Delaunay(hull)
+        res = hull.find_simplex(ret.to_numpy()) >= 0
+        ret['in_hull'] = res
+        ret  = ret [ ret['in_hull'] ][['x','y','z']].copy()
+        #ret = ret[IsPointsInsideMesh(self.totriangles(), ret.to_numpy())].copy()
+        print(f'check point in mesh {len(ret)} ',flush=True)
+        print(f'check point in mesh {ret.shape} ',flush=True)
+        print(f'check point in mesh done',flush=True)
+        return ret.to_numpy()
 
 class OBJWrapper:
     def __init__(self,coordfile=None):
         self.data = [[],[],[]] # legend, vector, faces
         if coordfile != None:
             self.init_coord(coordfile)
+        else:
+            self.xmin = 0
+            self.ymin = 0
+            self.zmin = 0
+            self.margin = 0
+            self.binsize = 1
+            self.x_shift = 0
+            self.y_shift = 0
         self.mesh_xmin = 0
         self.mesh_xmax = 0
         self.mesh_ymin = 0
