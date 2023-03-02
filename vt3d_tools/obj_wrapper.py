@@ -1,4 +1,5 @@
 import json
+import math
 import numpy as np
 import pandas as pd
 #from vt3d_tools.is_inside_mesh import IsPointsInsideMesh
@@ -43,12 +44,19 @@ class Mesh:
 
     def grids(self,step=10):
         # create grids
-        xn = int((self.xmax-self.xmin+1)//step)
-        yn = int((self.ymax-self.ymin+1)//step)
-        zn = int((self.zmax-self.zmin+1)//step)
-        x = np.linspace(self.xmin,self.xmax,xn)
-        y = np.linspace(self.ymin,self.ymax,yn)
-        z = np.linspace(self.zmin,self.zmax,zn)
+        xmax, xmin = math.ceil(self.xmax), math.floor(self.xmin)
+        ymax, ymin = math.ceil(self.ymax), math.floor(self.ymin)
+        zmax, zmin = math.ceil(self.zmax), math.floor(self.zmin)
+
+        xn = int((xmax-xmin+1)//step)
+        yn = int((ymax-ymin+1)//step)
+        zn = int((zmax-zmin+1)//step)
+        x = np.linspace(xmin,xmax,xn)
+        y = np.linspace(ymin,ymax,yn)
+        z = np.linspace(zmin,zmax,zn)
+        print(f'step in x {x}',flush=True)
+        print(f'step in y {y}',flush=True)
+        print(f'step in z {z}',flush=True)
         xv, yv, zv = np.meshgrid(x, y, z)
         ret = pd.DataFrame()
         ret['x'] = xv.reshape(-1)
@@ -56,7 +64,6 @@ class Mesh:
         ret['z'] = zv.reshape(-1)
         print(f'check point in mesh {len(ret)} ',flush=True)
         print(f'check point in mesh {ret.shape} ',flush=True)
-
         # modify based on codes from spateo
         from scipy.spatial import ConvexHull, Delaunay, cKDTree
         hull = ConvexHull(self.vectors)
