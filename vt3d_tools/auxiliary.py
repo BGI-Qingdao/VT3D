@@ -9,6 +9,7 @@ def Auxiliary_usage():
           PCA3D                 Reset 3d coordinate by PCA.
           FormatMesh            Shift and scale the mesh model.
           BuildGrids            Build grids( continuous model )
+          SCoexp                Spatial-related co-expression matrix calculation.
          """)
 
 
@@ -22,6 +23,7 @@ def Auxiliary_main(argv:[]):
                                            "PVMesh",
                                            "FormatMesh",
                                            "BuildGrids",
+                                           "SCoexp",
                                                    ):
         Auxiliary_usage()
         exit(1)
@@ -48,6 +50,10 @@ def Auxiliary_main(argv:[]):
     elif argv[0] == "BuildGrids":
         from vt3d_tools.build_grids import buildgrids_main
         buildgrids_main(argv[1:])
+        exit(0)
+    elif argv[0] == "SCoexp":
+        from vt3d_tools.scoexp import scoexp_main
+        scoexp_main(argv[1:])
         exit(0)
     else:
         Auxiliary_usage()
