@@ -200,8 +200,10 @@ To get the 2D projection to an arbitrary plane defined by three non-collinear po
 
 
 ### <a name=quick_models>How can I create a surface model from omics data</a>
-![fa00f9efe371da658bd59e3ca0c78be](https://user-images.githubusercontent.com/8720584/210744364-af476dbb-9f49-4be4-ac9e-c7ffc3435bc7.png)
 
+#### semi-automatic by Slicer 3D 
+
+![fa00f9efe371da658bd59e3ca0c78be](https://user-images.githubusercontent.com/8720584/210744364-af476dbb-9f49-4be4-ac9e-c7ffc3435bc7.png)
 
 ```
 cd hypo_preoptic
@@ -212,7 +214,15 @@ Note: This action will generate hypo_preoptic.coord.json
 The test3d.tif (opened by ImageJ 3DViewer)  :
 ![image](https://user-images.githubusercontent.com/8720584/210910747-d376be6c-7434-4fcb-83d0-f97adf6fbfa0.png)
 
-#### <a name=pca>How to adjust the coordinate of h5ad and mesh models by PCA</a>
+
+#### automatic by PyVista
+
+```
+vt3d Auxiliary PVMesh -i E14-16h_a_count_normal_stereoseq.h5ad -o E14-16h_shell  --spatial_key spatial --alpha 1.0
+```
+
+
+### <a name=pca>How to adjust the coordinate of h5ad and mesh models by PCA</a>
 
 Here I use L1 larva data as input 
 ```
@@ -236,7 +246,7 @@ Here I use L1 larva data as input
 >vt3d Auxiliary PCA3D -i L1_a_count_normal_stereoseq.h5ad -o  L1_pca  --spatial_key spatial --model_json model.json
 ```
 
-#### <a name=svm> How to create continuous model by SVM</a>
+### <a name=svm> How to create continuous model by SVM</a>
 
 ```
 > cat conf.json
