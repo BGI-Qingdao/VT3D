@@ -40,6 +40,7 @@ Options:
             --slice_num [default 1]
             --slice_step [default equal to thickness]
             --spatial_key [default 'spatial3D', the keyname of coordinate array in obsm]
+            --X [default notset, create cross sections based on p1 only]
 Example:
     > vt3d AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
@@ -80,12 +81,13 @@ def anyslice_main(argv:[]):
     coord_key = 'spatial3D'
     num_of_slices = 1
     slice_gap = thickness
-    slice_gap_custom = 0
+    slice_gap_custom = 0 
+    X_section = False
     #anno_key = 'annotation'
     ##############################################
     # parse parameters
     try:
-        opts, args = getopt.getopt(argv,"hi:o:",
+        opts, args = getopt.getopt(argv,"hXi:o:",
                                         ["help",
                                          "p0=",
                                          "p1=",
@@ -101,6 +103,8 @@ def anyslice_main(argv:[]):
         if opt in ('-h' ,'--help'):
             anyslice_usage()
             sys.exit(0)
+        elif opt == "-X":
+            X_section = True
         elif opt in ("-i"):
             indata = arg
         elif opt in ("-o"):
@@ -122,16 +126,48 @@ def anyslice_main(argv:[]):
             _, p2 = vector_from_str(arg)
     if slice_gap_custom == 0 :
         slice_gap = thickness
-    if num_of_slices <1 or indata == '' or prefix == '' or p0 == [] or p1 == [] or p2 == []:
-        print('ERROR: parameter imcomplete or invalid')
+    if num_of_slices <1 or indata == '' or prefix == '': 
+        print('ERROR: parameter imcomplete or invalid 1')
+        anyslice_usage()
+        sys.exit(1)
+    if X_section == False and ( p0 == [] or p1 == [] or p2 == []):
+        print('ERROR: parameter imcomplete or invalid 2')
+        anyslice_usage()
+        sys.exit(1)
+    if X_section and  p0 == [] :
+        print('ERROR: parameter imcomplete or invalid 3')
         anyslice_usage()
         sys.exit(1)
     #load h5ad
     inh5ad = H5ADWrapper(indata)
+    xyzc = inh5ad.getCellXYZC(coord_key,int)
+    if X_section:
+        xx = p0[0]
+        yy = p0[1]
+        zz = p0[2]
+        APML_xyzc = xyzc[ (xyzc['z']-zz).abs() <= (thickness/2)  ].copy()
+        APML_xyzc['vsid'] = 0
+        APML_xyzc['2d_x'] = APML_xyzc['x']
+        APML_xyzc['2d_y'] = APML_xyzc['y']
+
+        APDV_xyzc = xyzc[ (xyzc['y']-yy).abs() <= (thickness/2)  ].copy()
+        APDV_xyzc['vsid'] = -1
+        APDV_xyzc['2d_x'] = APDV_xyzc['x']
+        APDV_xyzc['2d_y'] = APDV_xyzc['z']
+
+        MLDV_xyzc = xyzc[ (xyzc['x']-xx).abs() <= (thickness/2)  ].copy()
+        MLDV_xyzc['vsid'] = 1
+        MLDV_xyzc['2d_x'] = MLDV_xyzc['y']
+        MLDV_xyzc['2d_y'] = MLDV_xyzc['z']
+
+        all_new_xyzc = pd.concat([APML_xyzc,APDV_xyzc,MLDV_xyzc],ignore_index=True)
+        out_h5ad = inh5ad.extract_and_assign2D(all_new_xyzc['cell'].to_numpy(),all_new_xyzc[['2d_x','2d_y']].to_numpy())
+        out_h5ad.obs['vsid'] = all_new_xyzc['vsid'].to_numpy()
+        out_h5ad.write(f'{prefix}.h5ad', compression="gzip")
+        return 
     #init plane
     plane = Plane(p0,p1,p2)
     #filter cells
-    xyzc = inh5ad.getCellXYZC(coord_key,int)
     dist = plane.distance(xyzc)
     xyzc['dist'] = dist
     xyzc['abs_dis'] = np.abs(dist)
@@ -141,6 +177,7 @@ def anyslice_main(argv:[]):
         #project 2D
         new_xyzc = plane.project_coord(xyzc,xyzc['dist'].to_numpy())
         new_xyzc = project2D(new_xyzc)
+        new_xyzc['vsid'] = 0
         #create new h5ad 
         out_h5ad = inh5ad.extract_and_assign2D(new_xyzc['cell'].to_numpy(),new_xyzc[['2d_x','2d_y']].to_numpy())
         #draw2DAnno(prefix,new_xyzc[['2d_x','2d_y']].to_numpy(),out_h5ad.obs[anno_key])
