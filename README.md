@@ -290,6 +290,14 @@ the surface model coordinate will be changed to
 
 There are lots of ways for obtaining 3D coordinates of three non-collinear points. One straightforward way is to freely acquire coordinates using our 3D atlas browser.
 
+#### Why Scoexp button not work in your data browser?
+
+1. First of all, your must assign more than two genes before Scoexp button can trigger.
+
+2. Some genes may not exist in Scoexp matrix because thoes genes are too rare ( <3% cell ).
+
+3. The Scoexp matrix are pre-computed by vt3d Auxiliary SCoexp. please manually move the output gene_scoexp folder into your atlas folder!
+
 ## <a name=contact>Contact us</a>
 
 1. Raising an issue is always a good way for questions
@@ -317,26 +325,28 @@ Detailed usage of each action:
 ### Detailed usage of MEP action
 
 ```
-Usage: vt3d MEP  [options]
+Usage : vt3d MEP  [options]
 
 Options:
-       required configurations:
+       required options:
             -i <input.h5ad>
             -o <output prefix>
 
-       RdRlBu_r mode
+       cmap mode
             --gene geneid
-            [note: enable --gene will override all pseudoFISH mode parameters]
+            [notice: enable --gene will override all pseudoFISH mode parameters]
+            --symbolsize [default 10, only used in cmap mode]
+            --cmap [default RdBu_r, only used in cmap mode]
 
        pseudoFISH mode
-            -r [geneid shown in Red(#ff0000) channel]
-            -g [geneid shown in Green(#00ff00) channel]
-            -c [geneid shown in Cyan(#00ffff) channel]
-            -m [geneid shown in Magenta(#ff00ff) channel]
-            -y [geneid shown in Yellow(#ffff00) channel]
-            -b [geneid shown in Blue(#0000ff) channel]
+            -r [geneid that draw in Red(#ff0000) channel]
+            -g [geneid that draw in Green(#00ff00) channel]
+            -c [geneid that draw in Cyan(#00ffff) channel]
+            -m [geneid that draw in Magenta(#ff00ff) channel]
+            -y [geneid that draw in Yellow(#ffff00) channel]
+            -b [geneid that draw in Blue(#0000ff) channel]
 
-       optional configurations:
+       optional configure options:
             --binsize [default 5]
             --spatial_key [defaut spatial3D, the keyname of coordinate array in obsm]
             --view [default APML, must be APML/APDV/MLDV]
@@ -345,9 +355,8 @@ Options:
                    [MLDV -> yz plane]
             --plane [default '', example: "[[0,0,0],[1,0,0],[1,1,0]]" ]
                     [define any plane by three points]
-                    [note: enable --plane will override --view]
+                    [notice: enable --plane will override --view]
             --drawborder [default 0, must be 1/0]
-            --symbolsize [default 10, only used in RdYlBu_r mode]
 
        optional ROI options:
             --xmin [default None]
@@ -356,14 +365,14 @@ Options:
             --xmax [default None]
             --ymax [default None]
             --zmax [default None]
-Example:
-     #example of RdYlBu_r mode, will generate test.png
+Example :
+     #example of cmap mode, will generate test.png
      vt3d MEP -i in.h5ad -o test --gene wnt1 --view APML
 
      #example of pseudoFISH mode, will generate test.tif :
      vt3d MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD --view APML
 
-     #example of RdYlBu_r mode with an assigned plane
+     #example of cmap mode with assigned plane
      vt3d MEP -i in.h5ad -o test --gene wnt1 --plane '[[0,0,0],[1,0,0],[1,1,0]]'
 
 ```
@@ -371,25 +380,27 @@ Example:
 ### Detailed usage of AnySlice
 
 ```
-Usage: vt3d AnySlice [options]
+Usage : vt3d AnySlice [options]
 
 Options:
-       required configurations:
+       required options:
             -i <input.h5ad>
             -o <output prefix>
             --p0 <coordinate of p0>
             --p1 <coordinate of p1>
             --p2 <coordinate of p2>
 
-       optional configurations:
+       optional options:
             --thickness [default 16]
             --slice_num [default 1]
             --slice_step [default equal to thickness]
             --spatial_key [default 'spatial3D', the keyname of coordinate array in obsm]
+            --X [default notset, create cross sections based on p1 only]
 Example:
     > vt3d AnySlice -i in.h5ad -o test --p0 "0,1,0" --p1 "1,0,0" --p2 "1,1,0"
     > ls
     test.h5ad
+
 
 ```
 
@@ -467,9 +478,16 @@ Example:
 
 ### Detailed usage of Auxiliary
 ```
-  vt3d Auxiliary subaction:
-          GrayScaleTIF          Generate 3D TIFF grayscale image as input of Slicer3D.
-          DrawVitrualSlices     Draw 2D image group as virtual slices
+ 
+ vt3d Auxiliary subaction:
+       GrayScaleTIF          Generate 3D TIFF gray scale image as input of Slicer3D.
+       PVMesh                Generate Mesh obj automaticly by pc.delaunay_3d
+       DrawVitrualSlices     Draw 2D images groupby vitrual slice
+       PCA3D                 Reset 3d coordinate by PCA.
+       FormatMesh            Shift and scale the mesh model.
+       BuildGrids            Build grids( continuous model )
+       SCoexp                Spatial-related co-expression matrix calculation.
+
 ```
 ####  Detailed usage of Auxiliary - GrayScaleTIF
 ```
@@ -514,3 +532,88 @@ Example:
             -t                  [default pdf, output type (png or pdf)]
             -h/--help           display this usage and exit
 ```
+####  Detailed usage of Auxiliary - PVMesh
+
+```
+Usage : vt3d Auxiliary PVMesh [options]
+
+Require:
+    pip install pymeshfix
+    pip install pyvista
+    pip install meshio
+Options:
+       required options:
+            -i <input.h5ad>
+            -o <output prefix>
+            --target_cluster [default 'all']
+            --cluster_key [default 'clusters', the keyname of cell type in obs]
+            --spatial_key [default 'spatial3D', the keyname of coordinate in obsm]
+            --smooth 1000 [niter of Laplacian smoothing]
+            --alpha [default 2.0]
+
+Notice: if target_cluster is all, cluster_key will be ignored.
+
+```
+####  Detailed usage of Auxiliary - PCA3D
+
+```
+Usage : vt3d Auxiliary PCA3D [options]
+
+Options:
+       required options:
+            -i <input.h5ad>
+            -o <output prefix>
+            --spatial_key [default 'spatial3D', the keyname of coordinate in obsm]
+            --model_json [default None, the model.json]
+
+Notice: data is priceless, no replace mode supported!
+
+Example of model.json
+{
+    "Meshes" : {
+        "body" : "example_data/body.obj" ,
+        "gut" : "example_data/gut.obj"     ,
+        "nueral" : "example_data/neural.obj" ,
+        "pharynx" : "example_data/pharynx.obj"
+    },
+    "mesh_coord" : "example_data/WT.coord.json"
+}
+
+```
+####  Detailed usage of Auxiliary - BuildGrids
+
+````
+
+Usage : vt3d Auxiliary PCA3D [options]
+
+Options:
+       required options:
+            -i <input.h5ad>
+            -o <output prefix>
+            -m <mesh.obj>
+            -c <conf.json>
+
+Example of conf.json
+{
+    "spatial_key" : "spatial",
+    "annotation" : "clusters",
+    "step": 10,
+    "genes" : [genename1,genename2]
+}
+
+````
+####  Detailed usage of Auxiliary - SCoexp
+
+```
+Usage : vt3d Auxiliary SCoexp [options]
+
+Options:
+    -i <input.h5ad>
+    -o <output prefix>
+    --spatial_key [default 'spatial3D', the keyname of coordinate in obsm]
+    --sigma [sigma of RBF kernel, default 15]
+    --genes [default None, file that contain target gene list. if None, all gene used]
+
+Notice: too much genes will lead to huge memory cost and dist cost.
+```
+
