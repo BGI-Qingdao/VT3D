@@ -19,6 +19,7 @@ def draw2DAnno(xys, annoname,anno , prefix,pt):
     print(f'#slices= {sub_num}')
     print(f'#draw col= {w}')
     sns.relplot(data=xysa, x="x", y="y", col="virtual_sid", col_wrap=w, hue=annoname, kind="scatter")
+    plt.axis('equal')
     if pt == 'pdf':
         plt.savefig(f'{prefix}.anno.pdf')
     else:

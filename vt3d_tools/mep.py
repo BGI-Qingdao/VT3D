@@ -350,13 +350,13 @@ def FISH_scale(num_points, panel_expr):
     ret_data = ret_data.astype(int)
     return ret_data
 
-def drawRdBu(x,y,e,prefix,W,H,symbolsize):
+def drawRdBu(x,y,e,prefix,W,H,symbolsize,cmap_name="RdYlBu_r"):
     tmp = pd.DataFrame()
     tmp['x'] = x
     tmp['y'] = y
     tmp['exp'] = e
     tmp = tmp.sort_values(by=['exp'])
-    sns.scatterplot(data=tmp,x='x',y='y',hue='exp',palette="RdYlBu_r",s=symbolsize, edgecolors='none',linewidths=0)
+    sns.scatterplot(data=tmp,x='x',y='y',hue='exp',palette=cmap_name,s=symbolsize, edgecolor='none',linewidth=0)
     plt.xlabel('project_x')
     plt.ylabel('project_y')
     plt.xlim(0,W)
@@ -366,16 +366,16 @@ def drawRdBu(x,y,e,prefix,W,H,symbolsize):
     plt.savefig(f'{prefix}.pdf',dpi=72)
     plt.close()
 
-def DrawAPDV_RdBu(body_info, expr,prefix,symbolsize):
+def DrawAPDV_RdBu(body_info, expr,prefix,symbolsize,cmap_name):
     W,H = body_info.getAPDV_WH()
     APDV_expr = expr.getMIR_APDV()
     APDV_expr['x'] = APDV_expr['x']
     APDV_expr['z'] = APDV_expr['z']
-    drawRdBu(APDV_expr['x'],APDV_expr['z'],APDV_expr['value'],f'{prefix}.raw',W,H,symbolsize)
+    drawRdBu(APDV_expr['x'],APDV_expr['z'],APDV_expr['value'],f'{prefix}.raw',W,H,symbolsize,cmap_name)
     draw_expr = FISH_scale(body_info.getAPDV_num_points(),APDV_expr['value'])
     draw_expr = draw_expr.astype(float)
     draw_expr = draw_expr / 255.0
-    drawRdBu(APDV_expr['x'],APDV_expr['z'],draw_expr,prefix,W,H,symbolsize)
+    drawRdBu(APDV_expr['x'],APDV_expr['z'],draw_expr,prefix,W,H,symbolsize,cmap_name)
     ret = pd.DataFrame()
     ret['x'] = APDV_expr['x'].to_numpy()
     ret['y'] = APDV_expr['z'].to_numpy()
@@ -383,16 +383,16 @@ def DrawAPDV_RdBu(body_info, expr,prefix,symbolsize):
     ret['eMEP'] = draw_expr
     ret.to_csv(f'{prefix}.result.csv',sep='\t',header=True,index=False)
 
-def DrawMLDV_RdBu(body_info, expr,prefix,symbolsize):
+def DrawMLDV_RdBu(body_info, expr,prefix,symbolsize,cmap_name):
     W,H = body_info.getMLDV_WH()
     MLDV_expr = expr.getMIR_MLDV()
     MLDV_expr['y'] = MLDV_expr['y']
     MLDV_expr['z'] = MLDV_expr['z']
-    drawRdBu(MLDV_expr['y'],MLDV_expr['z'],MLDV_expr['value'],f'{prefix}.raw',W,H,symbolsize)
+    drawRdBu(MLDV_expr['y'],MLDV_expr['z'],MLDV_expr['value'],f'{prefix}.raw',W,H,symbolsize,cmap_name)
     draw_expr = FISH_scale(body_info.getMLDV_num_points(),MLDV_expr['value'])
     draw_expr = draw_expr.astype(float)
     draw_expr = draw_expr / 255.0
-    drawRdBu(MLDV_expr['y'],MLDV_expr['z'],draw_expr,prefix,W,H,symbolsize)
+    drawRdBu(MLDV_expr['y'],MLDV_expr['z'],draw_expr,prefix,W,H,symbolsize,cmap_name)
     ret = pd.DataFrame()
     ret['x'] = MLDV_expr['y'].to_numpy()
     ret['y'] = MLDV_expr['z'].to_numpy()
@@ -400,16 +400,16 @@ def DrawMLDV_RdBu(body_info, expr,prefix,symbolsize):
     ret['eMEP'] = draw_expr
     ret.to_csv(f'{prefix}.result.csv',sep='\t',header=True,index=False)
 
-def DrawAPML_RdBu(body_info, expr,prefix,symsize):
+def DrawAPML_RdBu(body_info, expr,prefix,symsize,cmap_name):
     W,H = body_info.getAPML_WH()
     APML_expr = expr.getMIR_APML()
     APML_expr['y'] = APML_expr['y']#//+body_info.bin_draw_scale 
     APML_expr['x'] = APML_expr['x']#//+body_info.bin_draw_scale 
-    drawRdBu(APML_expr['x'],APML_expr['y'],APML_expr['value'],f'{prefix}.raw',W,H,symsize)
+    drawRdBu(APML_expr['x'],APML_expr['y'],APML_expr['value'],f'{prefix}.raw',W,H,symsize,cmap_name)
     draw_expr =  FISH_scale(body_info.getAPML_num_points(),APML_expr['value'])
     draw_expr = draw_expr.astype(float)
     draw_expr = draw_expr / 255.0
-    drawRdBu(APML_expr['x'],APML_expr['y'],draw_expr,prefix,W,H,symsize)
+    drawRdBu(APML_expr['x'],APML_expr['y'],draw_expr,prefix,W,H,symsize,cmap_name)
     ret = pd.DataFrame()
     ret['x'] = APML_expr['x'].to_numpy()
     ret['y'] = APML_expr['y'].to_numpy()
@@ -476,13 +476,13 @@ def DrawSingleFISH(view, body_info, gene_expr, color,prefix):
     elif view == "MLDV":
         return DrawSingleFISH_DVML(body_info, gene_expr, color,prefix)
 
-def DrawSingleRdBu(view,body_info, expr,prefix,symsize):
+def DrawSingleRdBu(view,body_info, expr,prefix,symsize,cmap_name):
     if view == "APML" :
-        return DrawAPML_RdBu(body_info, expr,prefix,symsize)
+        return DrawAPML_RdBu(body_info, expr,prefix,symsize,cmap_name)
     elif view == "APDV":
-        return DrawAPDV_RdBu(body_info, expr,prefix,symsize)
+        return DrawAPDV_RdBu(body_info, expr,prefix,symsize,cmap_name)
     elif view == "MLDV":
-        return DrawMLDV_RdBu(body_info, expr,prefix,symsize)
+        return DrawMLDV_RdBu(body_info, expr,prefix,symsize,cmap_name)
 
 ############################################################################
 # common codes for one channel
@@ -521,9 +521,11 @@ Options:
             -i <input.h5ad>
             -o <output prefix>
 
-       RdRlBu_r mode  
+       cmap mode  
             --gene geneid
             [notice: enable --gene will override all pseudoFISH mode parameters]
+            --symbolsize [default 10, only used in cmap mode]
+            --cmap [default RdBu_r, only used in cmap mode]
 
        pseudoFISH mode
             -r [geneid that draw in Red(#ff0000) channel]
@@ -544,7 +546,6 @@ Options:
                     [define any plane by three points]
                     [notice: enable --plane will override --view]
             --drawborder [default 0, must be 1/0]
-            --symbolsize [default 10, only used in RdYlBu_r mode]
 
        optional ROI options:
             --xmin [default None]
@@ -554,13 +555,13 @@ Options:
             --ymax [default None]
             --zmax [default None]
 Example :
-     #example of RdYlBu_r mode, will generate test.png     
+     #example of cmap mode, will generate test.png     
      vt3d MEP -i in.h5ad -o test --gene wnt1 --view APML 
 
      #example of pseudoFISH mode, will generate test.tif :
      vt3d MEP -i in.h5ad -o test -r notum -g wnt1 -m foxD --view APML
 
-     #example of RdYlBu_r mode with assigned plane
+     #example of cmap mode with assigned plane
      vt3d MEP -i in.h5ad -o test --gene wnt1 --plane '[[0,0,0],[1,0,0],[1,1,0]]'
 """)
 
@@ -605,6 +606,7 @@ def mep_main(argv:[]):
     borderbinsize = 20
     drawborder=0
     symbolsize=10
+    cmap_name = "RdYlBu_r"
     ###############################################################################
     # Parse the arguments
     try:
@@ -620,6 +622,7 @@ def mep_main(argv:[]):
                                          "zmax=",
                                         "plane=",
                                       "binsize=",
+                                         "cmap=",
                                    "symbolsize=",
                                   "spatial_key=",
                                    "drawborder=",
@@ -655,6 +658,8 @@ def mep_main(argv:[]):
             p_gene.append(arg)
         elif opt == "--symbolsize":
             symbolsize=int(arg)
+        elif opt == "--cmap":
+            cmap_name=arg
         elif opt == "--drawborder":
             drawborder=int(arg)
         elif opt == "--xmin":
@@ -700,7 +705,7 @@ def mep_main(argv:[]):
         plane.project_coord(xyzc,dist)
         xyzc = project3D(xyzc,dist)
         inh5ad.setXYZ(coord_key,xyzc[['new_x','new_y','new_z']].to_numpy())
-     
+
     roi = ROIManager(xmin,xmax,ymin,ymax,zmin,zmax)
     binconf = BinConf(view,binsize,borderbinsize)
     ###############################################################################
@@ -731,8 +736,8 @@ def mep_main(argv:[]):
         GetBackground(view,body_info,binconf,drawborder)
         print('Loading expression now ...',flush=True)
         expr = GetGeneExpr(inh5ad,[gene],binconf,roi)
-        DrawSingleRdBu(view,body_info, expr,prefix,symbolsize)
-         
+        DrawSingleRdBu(view,body_info, expr,prefix,symbolsize,cmap_name)
+
     ###############################################################################
     # Done
     print('__ALL DONE__',flush=True)

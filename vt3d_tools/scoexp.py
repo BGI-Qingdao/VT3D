@@ -141,7 +141,10 @@ def scoexp( adata ,
 def printJsonPerGene(data):
     create_folder('gene_scoexp')
     genes = data.columns.tolist()
-    savedata2json(genes,f'gene_scoexp/genenames.json')
+    gene_ids = {}
+    for i, genes in enumerate(genes):
+        gene_ids[genes] = i
+    savedata2json(gene_ids,f'gene_scoexp/genenames.json')
     for gene in data.columns :
         scores = data[gene].tolist()
         savedata2json(scores,f'gene_scoexp/{gene}.json')
