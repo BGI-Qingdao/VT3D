@@ -14,6 +14,8 @@ VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic
     - [How can I create and visualize virtual slices](#quick_anyslicer)
     - [How can I create MEP images](#quick_mep)
     - [How can I create surface models from omics data](#quick_models)
+    - [How to adjust the coordinate of h5ad and mesh models by PCA](#pca)
+    - [How to create continuous model by SVM](#svm)
 - [Frequent Q & A](#q_a)
 - [Contact Us](#contact)
 - [Detailed Usages](#usages)
@@ -210,6 +212,45 @@ Note: This action will generate hypo_preoptic.coord.json
 The test3d.tif (opened by ImageJ 3DViewer)  :
 ![image](https://user-images.githubusercontent.com/8720584/210910747-d376be6c-7434-4fcb-83d0-f97adf6fbfa0.png)
 
+#### <a name=pca>How to adjust the coordinate of h5ad and mesh models by PCA</a>
+
+Here I use L1 larva data as input 
+```
+>cat model.json
+{
+    "Meshes" : {
+        "shell"                        : "L1_a/shell.obj",
+        "CNS"                          : "L1_a/CNS.obj",
+        "carcass"                      : "L1_a/carcass.obj",
+        "fatbody"                      : "L1_a/fatbody.obj",
+        "midgut"                       : "L1_a/midgut.obj",
+        "epidermis"                    : "L1_a/epidermis.obj",
+        "muscle"                       : "L1_a/muscle.obj",
+        "foregut"                      : "L1_a/foregut.obj",
+        "midgut_malpighian_tubule"     : "L1_a/midgut_malpighian_tubule.obj",
+        "hindgut_malpighian_tubule"    : "L1_a/hindgut_malpighian_tubule.obj"
+    },
+    "mesh_coord" : "fixed.json"
+}
+
+>vt3d Auxiliary PCA3D -i L1_a_count_normal_stereoseq.h5ad -o  L1_pca  --spatial_key spatial --model_json model.json
+```
+
+#### <a name=svm> How to create continuous model by SVM</a>
+
+```
+> cat conf.json
+{
+    "spatial_key" : "spatial",
+    "annotation" : "annotation",
+    "step": 1,
+    "genes" : ["Acbp2",
+               "128up"
+               ]
+}
+
+>vt3d Auxiliary BuildGrids -i E16-18h_a_count_normal_stereoseq.h5ad -o E16-18h_grids -m E16-18h_a_shell.obj -c conf.json
+```
 
 ## <a name=q_a>Frequent Q & A</a>
 
