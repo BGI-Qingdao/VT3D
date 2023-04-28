@@ -10,6 +10,7 @@ VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic
     - [Download](#download)
 - [Quick Start](#quick_start)
     - [Where can I download example datasets](#examples)
+    - [News: How can I browser my data in notbook with one line of python codes ?](#update_launch) 
     - [How can I use AtlasBroser to browse your data](#quick_atlasbrowser)
     - [How can I create and visualize virtual slices](#quick_anyslicer)
     - [How can I create MEP images](#quick_mep)
@@ -109,6 +110,10 @@ cd ../
 ```
 
 You can find all download commands from [website](http://www.bgiocean.com/vt3d_example/)
+### <a name=update_launch>News: How can I browser my data in notbook with one line of python codes ?</a>
+
+**News:** 
+We are working on creating a python function to lauch atlas browser, please try [this](https://github.com/cchd0001/test_stereopy_3D_browser)
 
 ### <a name=quick_atlasbrowser>How can I use AtlasBroser to browse your data</a>
 
