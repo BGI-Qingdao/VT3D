@@ -47,6 +47,7 @@ Options:
             -i <input.h5ad>
             -c <conf.json>
             -o [output prefix, default webcace]
+            -d [dtype of coord. default i (i/f int/float)]
 Example:
         > vt3d AtlasBrowser BuildAtlas -i in.h5ad -c atlas.json
         > cat atlas.json
@@ -96,9 +97,9 @@ def webcache_main(argv:[]):
     inh5data = ''
     conf_file = ''
     prefix = 'webcache'
-
+    dtype=int
     try:
-        opts, args = getopt.getopt(argv,"hi:o:c:",["help"])
+        opts, args = getopt.getopt(argv,"hi:o:c:d:",["help"])
     except getopt.GetoptError:
         webcache_usage()
         sys.exit(2)
@@ -112,6 +113,9 @@ def webcache_main(argv:[]):
             inh5data = arg
         elif opt in ("-c"):
             conf_file = arg
+        elif opt in ("-d"):
+            if arg == 'f':
+                dtype = float
 
     #######################################
     # sanity check
@@ -119,7 +123,7 @@ def webcache_main(argv:[]):
         print('Error: incomplete parameters, exit ...')
         webcache_usage()
         sys.exit(2)
-        
+
     #######################################
     # load conf json and sanity check
     confdata = json.load(open(conf_file))
@@ -140,7 +144,7 @@ def webcache_main(argv:[]):
         meshfile = confdata['Meshes'][meshkey]
         check_file(confdata['mesh_coord'])
         check_file(meshfile)
-        
+
     #######################################
     # load h5ad and sanity check
     inh5ad = H5ADWrapper(inh5data)
@@ -183,14 +187,14 @@ def webcache_main(argv:[]):
     #######################################
     # generate annotation json
     for anno in confdata['Annotatinos']:
-        xyza = inh5ad.getCellXYZA(confdata['Coordinate'],int,anno)
+        xyza = inh5ad.getCellXYZA(confdata['Coordinate'],dtype,anno)
         mapper = summary['annomapper'][f'{anno}_legend2int']
         xyza['annoid'] = xyza.apply(lambda row : mapper[row['anno']],axis=1)
         savedata2json(xyza[['x','y','z','annoid']].to_numpy().tolist(),f'{prefix}/Anno/{anno}.json')
     #######################################
     # generate gene json
     for gene in confdata['Genes']:
-        xyze = inh5ad.getGeneXYZE(gene,0,confdata['Coordinate'],int)
+        xyze = inh5ad.getGeneXYZE(gene,0,confdata['Coordinate'],dtype)
         savedata2json(xyze.to_numpy().tolist(),f'{prefix}/Gene/{gene}.json')
     #######################################
     # cp html and js

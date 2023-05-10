@@ -12,10 +12,14 @@ Usage : vt3d <action> [options ]
           -h/--help           show this short usage
 Action:
           -------------------------------------------------------------------------------
+          version 1.0:
           MEP                   Maximun Expression Projection. (suit 3D structure to 2D)
           AnySlice              Extract 2D slice from any angle.
-          AtlasBrowser		Browser your data interactively.
-          Auxiliary 		More auxiliary tools
+          AtlasBrowser          Browser your data interactively.
+          Auxiliary             More auxiliary tools
+
+          version 2.0:
+          Launch                Launch a atlas browser without create any caches.
           -------------------------------------------------------------------------------
 
 Detail usage of each action:
@@ -31,6 +35,7 @@ if __name__ == "__main__":
                                                    "AnySlice",
                                                    "Auxiliary",
                                                    "AtlasBrowser",
+                                                   "Launch",
                                                    ):
         main_usage()
         exit(1)
@@ -49,6 +54,9 @@ if __name__ == "__main__":
     elif sys.argv[1] == "AtlasBrowser" :
         from vt3d_tools.atlas_browser import AtlasBrowser_main
         AtlasBrowser_main(sys.argv[2:])
+    elif  sys.argv[1] == "Launch":
+        from vt3d_tools.launch import launch_main
+        launch_main(sys.argv[2:])
     else:
         main_usage()
         exit(1)
