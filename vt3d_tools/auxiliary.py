@@ -10,6 +10,7 @@ def Auxiliary_usage():
           FormatMesh            Shift and scale the mesh model.
           BuildGrids            Build grids( continuous model )
           SCoexp                Spatial-related co-expression matrix calculation.
+          MeshSub               Filter data by only keep within mesh points. 
          """)
 
 
@@ -24,6 +25,7 @@ def Auxiliary_main(argv:[]):
                                            "FormatMesh",
                                            "BuildGrids",
                                            "SCoexp",
+                                           "MeshSub",
                                                    ):
         Auxiliary_usage()
         exit(1)
@@ -54,6 +56,10 @@ def Auxiliary_main(argv:[]):
     elif argv[0] == "SCoexp":
         from vt3d_tools.scoexp import scoexp_main
         scoexp_main(argv[1:])
+        exit(0)
+    elif argv[0] == "MeshSub":
+        from vt3d_tools.mesh_sub import meshsub_main
+        meshsub_main(argv[1:])
         exit(0)
     else:
         Auxiliary_usage()

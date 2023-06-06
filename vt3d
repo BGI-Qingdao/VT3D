@@ -18,8 +18,6 @@ Action:
           AtlasBrowser          Browser your data interactively.
           Auxiliary             More auxiliary tools
 
-          version 2.0:
-          Launch                Launch a atlas browser without create any caches.
           -------------------------------------------------------------------------------
 
 Detail usage of each action:
@@ -35,7 +33,6 @@ if __name__ == "__main__":
                                                    "AnySlice",
                                                    "Auxiliary",
                                                    "AtlasBrowser",
-                                                   "Launch",
                                                    ):
         main_usage()
         exit(1)
@@ -54,9 +51,6 @@ if __name__ == "__main__":
     elif sys.argv[1] == "AtlasBrowser" :
         from vt3d_tools.atlas_browser import AtlasBrowser_main
         AtlasBrowser_main(sys.argv[2:])
-    elif  sys.argv[1] == "Launch":
-        from vt3d_tools.launch import launch_main
-        launch_main(sys.argv[2:])
     else:
         main_usage()
         exit(1)
