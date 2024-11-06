@@ -19,6 +19,7 @@ VT3D: a versatile visualization toolbox for 3D spatially resolved transcriptomic
     - [How can I create continuous model by SVM](#svm)
 - [Frequent Q & A](#q_a)
 - [Contact Us](#contact)
+- [Cite Us](#cite)
 - [Detailed Usages](#usages)
 
 ## <a name=install>Installation</a>
@@ -307,6 +308,9 @@ There are lots of ways for obtaining 3D coordinates of three non-collinear point
 
 1. Raising an issue is always a good way for questions
 2. Email us if you need: guolidong@genomics.cn;liyao1@genomics.cn;xumengyang@genomics.cn
+## <a name=cite>Cite us</a>
+
+VT3D: a visualization toolbox for 3D transcriptomic data.  Journal of Genetics and Genomics. 2023. https://doi.org/10.1016/j.jgg.2023.04.001
 
 ## <a name=usages>Detailed usages</a>
 
